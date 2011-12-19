@@ -56,7 +56,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			if (Platform.IsMac) {
 				paths = new string[]{ "/Applications/Unity/Documentation/ScriptReference" };
 			} else if (Platform.IsWindows) {
-				paths = new string[]{ "C:/Program Files/Unity/Documentation/ScriptReference", "C:/Program Files (x86)/Unity/Documentation/Script Reference" };
+				paths = new string[] { "C:/Program Files/Unity/Editor/Data/Documentation/Documentation/ScriptReference", "C:/Program Files (x86)/Unity/Editor/Data/Documentation/Documentation/ScriptReference" };
 			}// Initialize script reference base path
 			
 			
@@ -81,25 +81,25 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		protected override void Run ()
 		{
 			string token = GetCurrentToken ();
+			string baseToken = GetBaseToken (token);
 			
-			// Fallback to class reference root if no token found
-			string url = string.Format ("{0}/{1}", apiBase, classReferencePage); 
+			if (string.IsNullOrEmpty (token)) {
+				DesktopService.ShowUrl (string.Format ("file://{0}/{1}", apiBase, classReferencePage));
+				return;
+			}// Fallback to class reference root if no token found
 			
-			if (!string.IsNullOrEmpty (token)) {
-				url = string.Format("{0}/{1}.html", apiBase, token);
-				if (!File.Exists (url)) {
-					url = string.Format ("{0}/{1}.html", apiBase, token.Replace ('.', '-'));
-					if (!File.Exists (url)) {
-						url = string.Format ("{0}/{1}?q={2}", onlineApiBase, searchPage, token);
-					}// If changing Base.member to Base-member doesn't help, fall back to online search
-				}// If a local literal path isn't found for the token
-			}// If a token is found
+			var baseUrls = new[]{ token, token.Replace ('.', '-'), baseToken };
 			
-			if (!url.StartsWith ("http://", StringComparison.OrdinalIgnoreCase)) {
-				url = string.Format ("file://{0}", url);
-			}// Prepend file:// for local lookups
+			foreach (string baseUrl in baseUrls) {
+				string url = string.Format ("{0}/{1}.html", apiBase, baseUrl);
+				if (File.Exists (url)) {
+					DesktopService.ShowUrl (string.Format ("file://{0}", url));
+					return;
+				}// Open local match
+			}
 			
-			DesktopService.ShowUrl (url);
+			// Fall back to online search
+			DesktopService.ShowUrl (string.Format ("{0}/{1}?q={2}", onlineApiBase, searchPage, baseToken));
 		}
 		
 		// Characters that signify the beginning or end of a searchable token
@@ -133,6 +133,16 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}// If a document is open
 			
 			return string.Empty;
+		}
+		
+		static string GetBaseToken (string token) {
+			if (!string.IsNullOrEmpty (token)) {
+				int lastDot = token.LastIndexOf ('.');
+				if (0 <= lastDot && (token.Length-1) > lastDot)
+					return token.Substring (lastDot+1);
+			}
+			
+			return token;
 		}
 	}
 
