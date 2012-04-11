@@ -1,0 +1,236 @@
+<!-- ShaderLabSyntaxMode.xml
+
+ Author:
+   Levi Bard <levi@unity3d.com>
+
+ Copyright (c) 2010 Unity Technologies A/S
+
+ Based on CSharpSyntaxMode by Mike Krüger
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "ShaderLab" mimeTypes="text/x-shader" ignorecase="true" extends="text/x-csrc">
+	<Property name="LineComment">//</Property>
+	<Property name="StringQuote">"</Property>
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
+	
+	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	
+	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+
+	<Match color = "constant.digit">CSharpNumber</Match>
+	
+	<Keywords color = "text.preprocessor">
+		<Word>CGPROGRAM</Word>
+		<Word>ENDCG</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.operator">
+		<Word>TexGen</Word>
+		<Word>LightmapMode</Word>
+		<Word>SetTexture</Word>
+		<Word>Lighting</Word>
+		<Word>Material</Word>
+		<Word>Cull</Word>
+		<Word>ZTest</Word>
+		<Word>ZWrite</Word>
+		<Word>Fog</Word>
+		<Word>AlphaTest</Word>
+		<Word>Blend</Word>
+		<Word>ColorMask</Word>
+		<Word>Offset</Word>
+		<Word>SeparateSpecular</Word>
+		<Word>ColorMaterial</Word>
+		<Word>Diffuse</Word>
+		<Word>Ambient</Word>
+		<Word>Specular</Word>
+		<Word>Shininess</Word>
+		<Word>Emission</Word>
+		<Word>Combine</Word>
+		<Word>ConstantColor</Word>
+		<Word>Matrix</Word>
+		<Word>Lerp</Word>
+		<Word>Mode</Word>
+		<Word>Density</Word>
+		<Word>LightMode</Word>
+		<Word>RequireOptions</Word>
+		<Word>LightTexCount</Word>
+		<Word>Name</Word>
+		<Word>Bind</Word>
+		<Word>UsePass</Word>
+		<Word>TextureScale</Word>
+		<Word>TextureSize</Word>
+		<Word>BorderScale</Word>
+		<Word>Fallback</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.selection">
+	</Keywords>
+	
+	<Keywords color = "keyword.iteration">
+	</Keywords>
+	
+	<Keywords color = "keyword.jump">
+	</Keywords>
+	
+	<Keywords color = "keyword.context">
+	</Keywords>
+	
+	<Keywords color = "keyword.exceptions">
+	</Keywords>
+	
+	<Keywords color = "constant.language">
+		<Word>On</Word>
+		<Word>Off</Word>
+		<Word>ObjectLinear</Word>
+		<Word>EyeLinear</Word>
+		<Word>SphereMap</Word>
+		<Word>CubeReflect</Word>
+		<Word>CubeNormal</Word>
+		<Word>A</Word>
+		<Word>RGB</Word>
+		<Word>Less</Word>
+		<Word>Greater</Word>
+		<Word>LEqual</Word>
+		<Word>GEqual</Word>
+		<Word>NotEqual</Word>
+		<Word>Always</Word>
+		<Word>AmbientAndDiffuse</Word>
+		<Word>Emission</Word>
+		<Word>Back</Word>
+		<Word>Front</Word>
+		<Word>Linear</Word>
+		<Word>Exp</Word>
+		<Word>Exp2</Word>
+		<Word>One</Word>
+		<Word>Zero</Word>
+		<Word>SrcColor</Word>
+		<Word>SrcAlpha</Word>
+		<Word>DstColor</Word>
+		<Word>DstAlpha</Word>
+		<Word>OneMinusSrcColor</Word>
+		<Word>OneMinusSrcAlpha</Word>
+		<Word>OneMinusDstColor</Word>
+		<Word>OneMinusDstAlpha</Word>
+		<Word>AppSrcAdd</Word>
+		<Word>AppDstAdd</Word>
+		<Word>Vertex</Word>
+		<Word>VertexOrNone</Word>
+		<Word>VertexOnly</Word>
+		<Word>Pixel</Word>
+		<Word>PixelOnly</Word>
+		<Word>VertexOrPixel</Word>
+		<Word>VertexAndPixel</Word>
+		<Word>PixelOrNone</Word>
+		<Word>None</Word>
+		<Word>Always</Word>
+		<Word>SoftVegetation</Word>
+		<Word>Normal</Word>
+		<Word>Tangent</Word>
+		<Word>Texcoord</Word>
+		<Word>Texcoord0</Word>
+		<Word>Texcoord1</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.declaration">
+	</Keywords>
+	
+	<Keywords color = "keyword.type">
+		<Word>Shader</Word>
+		<Word>Properties</Word>
+		<Word>SubShader</Word>
+		<Word>Pass</Word>
+		<Word>Texture</Word>
+		<Word>Fog</Word>
+		<Word>Tags</Word>
+		<Word>BindChannels</Word>
+		<Word>GrabPass</Word>
+		<Word>Category</Word>
+		<Word>Color</Word>
+		<Word>Range</Word>
+		<Word>Float</Word>
+		<Word>Vector</Word>
+		<Word>2D</Word>
+		<Word>Rect</Word>
+		<Word>Cube</Word>
+		<Word>_Object2World</Word>
+		<Word>_World2Object</Word>
+		<Word>_ObjectSpaceCameraPos</Word>
+		<Word>_ModelLightColor</Word>
+		<Word>_SpecularLightColor</Word>
+		<Word>_ObjectSpaceLightPos</Word>
+		<Word>_Light2World</Word>
+		<Word>_World2Light</Word>
+		<Word>_Object2Light</Word>
+		<Word>_Time</Word>
+		<Word>_SinTime</Word>
+		<Word>_CosTime</Word>
+		<Word>_ProjectionParams</Word>
+		<Word>_CubeNormalize</Word>
+		<Word>_SpecFalloff</Word>
+		<Word>Constant</Word>
+		<Word>Previous</Word>
+	</Keywords>
+	
+	<Keywords color = "constant.language.void">
+	</Keywords>
+	
+	<Keywords color = "keyword.namespace">
+	</Keywords>
+	
+	<Keywords color = "keyword.property">
+	</Keywords>
+	
+	<Keywords color = "keyword.declaration">
+	</Keywords>
+	
+	<Keywords color = "keyword.parameter">
+	</Keywords>
+	
+	
+	<Keywords color = "keyword.operator.declaration">
+	</Keywords>
+	
+	<Keywords color = "keyword.misc">
+	</Keywords>
+
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
+			<Word>pragma</Word>
+		</Keywords>
+	</Rule>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+		</Keywords>	
+	</Rule>
+	
+	<Rule name = "String">
+	</Rule>
+	
+	<Rule name = "XmlDocumentationTag">
+	</Rule>
+	
+	<Keywords color="keyword.type">
+	</Keywords>
+
+</SyntaxMode>

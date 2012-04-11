@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\mono-repo\monodevelop\main\build\AddIns</OutputPath>
+    <OutputPath>obj\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -86,10 +86,6 @@
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\unity-icon-24.png" />
-    <EmbeddedResource Include="templates\NewBehaviourScriptCS.xft.xml" />
-    <EmbeddedResource Include="templates\NewBehaviourScriptJS.xft.xml" />
-    <EmbeddedResource Include="templates\NewBehaviourScriptBoo.xft.xml" />
-    <EmbeddedResource Include="templates\NewShader.xft.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UnitySoftDebuggerEngine.cs" />
@@ -99,7 +95,6 @@
     <Compile Include="GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.Soft.Unity.GeneralOptionsPanel.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="Commands.cs" />
     <Compile Include="PlayerConnection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -119,7 +114,4 @@
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="templates\" />
-  </ItemGroup>
 </Project>

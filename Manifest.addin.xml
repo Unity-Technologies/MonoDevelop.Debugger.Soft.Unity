@@ -1,11 +1,11 @@
 <Addin id = "MonoDevelop.Debugger.Soft.Unity"
        name	     = "Mono Soft Debugger Support for Unity"
        author	 = "Lucas Meijer"
-       url       = "http://www.unity3d.com"
+       url       = "http://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity"
        description = "Mono Soft Debugger Support for Unity"
        copyright   = "MIT X11"
-       category = "Debugging"
-       version   = "3.5-preview">
+       category = "Unity"
+       version   = "4.0-preview">
 
 	<Dependencies>
 		<Addin id="MonoDevelop.Ide" version="2.8"/>
@@ -36,30 +36,9 @@
 			</Section>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Help">
-		<CommandItem id = "MonoDevelop.Debugger.Soft.Unity.Commands.SearchReference" 
-            insertafter= "MonoDevelop.Ide.Commands.HelpCommands.Help" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/Commands/Help">
-		<Command id = "MonoDevelop.Debugger.Soft.Unity.Commands.SearchReference" 
-			_label = "Unity API Reference"
-			description = "Opens the Unity API Reference."
-			defaultHandler = "MonoDevelop.Debugger.Soft.Unity.SearchReferenceCommandHandler"
-			shortcut = "Control|'" 
-			macShortcut = "Meta|'"
-		/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "unity-icon-24" resource = "MonoDevelop.Debugger.Soft.Unity.icons.unity-icon-24.png" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id = "NewBehaviourScriptCS" resource = "MonoDevelop.Debugger.Soft.Unity.templates.NewBehaviourScriptCS.xft.xml"/>
-		<FileTemplate id = "NewBehaviourScriptJS" resource = "MonoDevelop.Debugger.Soft.Unity.templates.NewBehaviourScriptJS.xft.xml"/>
-		<FileTemplate id = "NewBehaviourScriptBoo" resource = "MonoDevelop.Debugger.Soft.Unity.templates.NewBehaviourScriptBoo.xft.xml"/>
-		<FileTemplate id = "NewShader" resource = "MonoDevelop.Debugger.Soft.Unity.templates.NewShader.xft.xml"/>
-	</Extension>
 </Addin>
 

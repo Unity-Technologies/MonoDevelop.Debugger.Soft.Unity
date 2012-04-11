@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Debugger.Soft.Unity
+namespace Unity.Utilities
 {
 	public enum Commands
 	{

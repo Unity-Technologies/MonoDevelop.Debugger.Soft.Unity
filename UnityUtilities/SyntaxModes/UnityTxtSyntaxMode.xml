@@ -1,0 +1,127 @@
+<!-- UnityTxtSyntaxMode.xml
+
+ Author:
+   Levi Bard <levi@unity3d.com>
+
+ Copyright (c) 2012 Unity Technologies A/S
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "UnityTxt" mimeTypes="text/x-unitytxt" ignorecase="true" extends="text/x-csharp">
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor">CONDITIONAL</EolSpan>
+	<EolSpan color = "comment.doc" rule="CommentDocumentation" tagColor="comment.tag.doc">///</EolSpan>
+	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span color = "string.other" rule="String" stopateol = "false" escape='""'>
+		<Begin>@"</Begin>
+		<End>"</End>
+	</Span>
+
+	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+
+	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
+	</Span>
+	
+	<Match color = "constant.digit">CSharpNumber</Match>
+	
+	<Keywords color = "text.preprocessor.keyword" ignorecase="false" >
+		<Word>CSRAW</Word>
+		<Word>CSNONE</Word>
+		<Word>CLASS</Word>
+		<Word>CUSTOM</Word>
+		<Word>CUSTOM_PROP</Word>
+		<Word>THREAD_SAFE</Word>
+		<Word>BEGIN</Word>
+		<Word>END</Word>
+		<Word>TYPEMAP</Word>
+		<Word>ENUM</Word>
+		<Word>DOCUMENT</Word>
+		<Word>AUTO</Word>
+		<Word>AUTO_PROP</Word>
+		<Word>AUTO_PTR_PROP</Word>
+		<Word>OBSOLETE</Word>
+		<Word>THREAD_UNSAFE</Word>
+		<Word>CONVERTEXAMPLE</Word>
+		<Word>NONSEALED_CLASS</Word>
+		<Word>CONDITIONAL</Word>
+		<Word>STRUCT</Word>
+	</Keywords>
+	
+	<Match color = "text.preprocessor.keyword">C\+\+RAW</Match>
+	<Match color = "text.preprocessor.keyword">BEGIN DOC</Match>
+	<Match color = "text.preprocessor.keyword">END DOC</Match>
+	<Match color = "text.preprocessor.keyword">BEGIN EX</Match>
+	<Match color = "text.preprocessor.keyword">END EX</Match>
+	
+	<Rule name = "text.preprocessor">
+	<Keywords color = "text.preprocessor.keyword">
+		<Word>include</Word>
+	</Keywords>
+	</Rule>
+	
+	<Rule name = "CommentDocumentation">
+		<Span color = "string" stopateol = "true" escape="\" rule="String" >
+			<Begin>"</Begin>
+			<End>"</End>
+		</Span>
+		<Keywords color="comment.keyword">
+			<Word>@c</Word>
+			<Word>@code</Word>
+			<Word>@example</Word>
+			<Word>@exception</Word>
+			<Word>@list</Word>
+			<Word>@para</Word>
+			<Word>@param</Word>
+			<Word>@paramref</Word>
+			<Word>@permission</Word>
+			<Word>@remarks</Word>
+			<Word>@returns</Word>
+			<Word>@return</Word>
+			<Word>@see</Word>
+			<Word>@seealso</Word>
+			<Word>@summary</Word>
+			<Word>@value</Word>
+			<Word>@type</Word>
+			<Word>@name</Word>
+			<Word>@cref</Word>
+			<Word>@item</Word>
+			<Word>@term</Word>
+			<Word>@description</Word>
+			<Word>@listheader</Word>
+			<Word>SA</Word>
+		</Keywords>
+	</Rule>
+</SyntaxMode>

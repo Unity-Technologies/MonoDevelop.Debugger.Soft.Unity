@@ -1,0 +1,53 @@
+<Addin id = "Unity.Utilities"
+       name	     = "Utilities for use with Unity"
+       author	 = "Levi Bard"
+       url       = "http://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity"
+       description = "Utilities for use with Unity"
+       copyright   = "MIT X11"
+       category = "Unity"
+       version   = "4.0-preview">
+
+	<Dependencies>
+		<Addin id="MonoDevelop.Ide" version="2.8"/>
+		<Addin id="MonoDevelop.Core" version="2.8"/>
+		<Addin id="MonoDevelop.SourceEditor2" version="2.8"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Help">
+		<CommandItem id = "Unity.Utilities.Commands.SearchReference" 
+            insertafter= "MonoDevelop.Ide.Commands.HelpCommands.Help" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Help">
+		<Command id = "Unity.Utilities.Commands.SearchReference" 
+			_label = "Unity API Reference"
+			description = "Opens the Unity API Reference."
+			defaultHandler = "Unity.Utilities.SearchReferenceCommandHandler"
+			shortcut = "Control|'" 
+			macShortcut = "Meta|'"
+		/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "NewBehaviourScriptCS" resource = "Unity.Utilities.templates.NewBehaviourScriptCS.xft.xml"/>
+		<FileTemplate id = "NewBehaviourScriptJS" resource = "Unity.Utilities.templates.NewBehaviourScriptJS.xft.xml"/>
+		<FileTemplate id = "NewBehaviourScriptBoo" resource = "Unity.Utilities.templates.NewBehaviourScriptBoo.xft.xml"/>
+		<FileTemplate id = "NewShader" resource = "Unity.Utilities.templates.NewShader.xft.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-shader" _description="ShaderLab shader" isText="true">
+			<File pattern="*.shader" />
+			<File pattern="*.cginc" />
+			<File pattern="*.glslinc" />
+		</MimeType>
+		<MimeType id="text/x-unitytxt" _description="Unity text metalanguage" isText="true">
+			<File pattern="*.txt" />
+		</MimeType>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="Unity.Utilities.SyntaxModes.ShaderLabSyntaxMode.xml"/>
+		<Templates resource="Unity.Utilities.SyntaxModes.UnityTxtSyntaxMode.xml"/>
+	</Extension>
+</Addin>
