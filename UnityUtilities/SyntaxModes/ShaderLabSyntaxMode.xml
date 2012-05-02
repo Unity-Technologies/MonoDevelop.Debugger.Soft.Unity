@@ -25,7 +25,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "ShaderLab" mimeTypes="text/x-shader" ignorecase="true" extends="text/x-csrc">
+<SyntaxMode name = "ShaderLab" mimeTypes="text/x-shader" ignorecase="true" extends="text/x-cgsrc">
 	<Property name="LineComment">//</Property>
 	<Property name="StringQuote">"</Property>
 	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
