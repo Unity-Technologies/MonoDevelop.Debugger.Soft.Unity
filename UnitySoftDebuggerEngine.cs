@@ -47,7 +47,11 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	{
 		UnitySoftDebuggerSession session;
 		static PlayerConnection unityPlayerConnection;
-		
+
+		List<ProcessInfo> usbProcesses = new List<ProcessInfo>();
+		List<ProcessInfo> usbThreadProcesses = new List<ProcessInfo>();
+		bool usbProcessesFinished = true;
+
 		internal static Dictionary<uint, PlayerConnection.PlayerInfo> UnityPlayers {
 			get;
 			private set;
@@ -134,18 +138,23 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			StringComparison comparison = StringComparison.OrdinalIgnoreCase;
 			
 			if (null != unityPlayerConnection) {
-				lock (unityPlayerConnection) {
-					foreach (string player in unityPlayerConnection.AvailablePlayers) {
-						try {
-							PlayerConnection.PlayerInfo info = PlayerConnection.PlayerInfo.Parse (player);
-							if (info.m_AllowDebugging) {
-								UnityPlayers[info.m_Guid] = info;
-								processes.Add (new ProcessInfo (info.m_Guid, info.m_Id));
-								++index;
+				if(Monitor.TryEnter (unityPlayerConnection)) {
+					try {
+						foreach (string player in unityPlayerConnection.AvailablePlayers) {
+							try {
+								PlayerConnection.PlayerInfo info = PlayerConnection.PlayerInfo.Parse (player);
+								if (info.m_AllowDebugging) {
+									UnityPlayers[info.m_Guid] = info;
+									processes.Add (new ProcessInfo (info.m_Guid, info.m_Id));
+									++index;
+								}
+							} catch {
+								// Don't care; continue
 							}
-						} catch {
-							// Don't care; continue
 						}
+					}
+					finally {
+						Monitor.Exit (unityPlayerConnection);
 					}
 				}
 			}
@@ -164,8 +173,20 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				}
 			}
 
-			// Direct USB devices
-			iOSDevices.GetUSBDevices(ConnectorRegistry, processes);
+			if (usbProcessesFinished)
+			{
+				usbProcesses = usbThreadProcesses;
+				usbProcessesFinished = false;
+
+				ThreadPool.QueueUserWorkItem (delegate {
+					usbThreadProcesses = new List<ProcessInfo>();
+					// Direct USB devices
+					iOSDevices.GetUSBDevices (ConnectorRegistry, usbThreadProcesses);
+					usbProcessesFinished = true;
+				});
+			}
+
+			processes.AddRange (usbProcesses);
 
 			return processes.ToArray ();
 		}
