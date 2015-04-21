@@ -130,11 +130,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			return session;
 		}
 		
-		public ProcessInfo[] GetAttachableProcesses ()
+		public ProcessInfo[] GetAttachableProcesses (Process[] systemProcesses)
 		{
 			int index = 1;
 			List<ProcessInfo> processes = new List<ProcessInfo> ();
-			Process[] systemProcesses = Process.GetProcesses ();
 			StringComparison comparison = StringComparison.OrdinalIgnoreCase;
 			
 			if (null != unityPlayerConnection) {
