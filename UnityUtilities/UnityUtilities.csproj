@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{46A6AC86-11AC-4D8E-A176-E80C09967E44}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -45,15 +45,19 @@
   <ItemGroup>
     <Reference Include="MonoDevelop.Core">
       <HintPath>..\..\monodevelop\main\build\bin\MonoDevelop.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <HintPath>..\..\monodevelop\main\build\bin\MonoDevelop.Ide.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextEditor">
       <HintPath>..\..\monodevelop\main\build\bin\Mono.TextEditor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>..\..\monodevelop\main\build\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
