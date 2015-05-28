@@ -43,7 +43,7 @@ using MonoDevelop.Debugger.Soft;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
-	public class UnitySoftDebuggerEngine: IDebuggerEngine
+	public class UnitySoftDebuggerEngine: DebuggerEngineBackend
 	{
 		UnitySoftDebuggerSession session;
 		static PlayerConnection unityPlayerConnection;
@@ -85,44 +85,25 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				MonoDevelop.Core.LoggingService.LogError ("Error launching player connection discovery service: Unity player discovery will be unavailable", e);
 			}
 		}
-		
-		public string Id {
-			get {
-				return "Mono.Debugger.Soft.Unity";
-			}
-		}
 
-		public bool CanDebugCommand (ExecutionCommand command)
+		public override bool CanDebugCommand (ExecutionCommand command)
 		{
 			return false;
 		}
 		
-		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			return null;
 		}
-
-		public DebuggerFeatures SupportedFeatures {
-			get {
-				return DebuggerFeatures.Breakpoints | 
-					   DebuggerFeatures.Pause | 
-					   DebuggerFeatures.Stepping | 
-					   DebuggerFeatures.DebugFile |
-					   DebuggerFeatures.ConditionalBreakpoints |
-					   DebuggerFeatures.Tracepoints |
-					   DebuggerFeatures.Catchpoints |
-					   DebuggerFeatures.Attaching;
-			}
-		}
-		
-		public DebuggerSession CreateSession ()
+			
+		public override DebuggerSession CreateSession ()
 		{
 			session = new UnitySoftDebuggerSession (ConnectorRegistry);
 			session.TargetExited += delegate{ session = null; };
 			return session;
 		}
 		
-		public ProcessInfo[] GetAttachableProcesses ()
+		public override ProcessInfo[] GetAttachableProcesses ()
 		{
 			int index = 1;
 			List<ProcessInfo> processes = new List<ProcessInfo> ();
