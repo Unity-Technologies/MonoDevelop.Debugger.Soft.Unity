@@ -92,6 +92,18 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			StartConnecting(new SoftDebuggerStartInfo(new SoftDebuggerConnectArgs(null, IPAddress.Loopback, (int)defaultPort)), 3, 1000);
 		}
 
+		protected override void EndSession ()
+		{
+			Detach ();
+			base.EndSession ();
+		}
+
+		protected override void OnExit ()
+		{
+			Detach ();
+			base.OnExit ();
+		}
+
 		protected override void OnDetach()
 		{
 			try {
