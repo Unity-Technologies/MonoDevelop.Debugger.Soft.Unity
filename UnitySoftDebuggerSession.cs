@@ -47,7 +47,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	/// <summary>
 	/// Debugger session for Unity scripting code
 	/// </summary>
-	public class UnitySoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
+	public class UnitySoftDebuggerSession : SoftDebuggerSession
 	{
 		ConnectorRegistry connectorRegistry;
 		// Connector that was used to make connection for current session.
@@ -58,9 +58,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			this.connectorRegistry = connectorRegistry;
 			// unityPath = Util.UnityLocation;
 			
-			Adaptor.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
-				SetBusyState (e);
-			};
+			Adaptor.BusyStateChanged += (object sender, BusyStateEventArgs e) => SetBusyState (e);
 		}
 
 		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
