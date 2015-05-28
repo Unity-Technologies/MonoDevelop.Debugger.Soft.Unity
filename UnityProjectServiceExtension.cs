@@ -60,10 +60,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		#region ProjectServiceExtension overrides
 		
 		private bool CanExecuteProject (Project project, ExecutionContext context) {
-			return null != project && 
-			       !string.IsNullOrEmpty (Util.UnityLocation) &&
-			       (File.Exists (Util.UnityLocation) || (MonoDevelop.Core.Platform.IsMac && Directory.Exists (Util.UnityLocation))) &&
-			       ReferencesUnity (new Project[]{ project });
+			return null != project &&  ReferencesUnity (new Project[]{ project });
 		}
 		
 		/// <summary>
@@ -71,8 +68,9 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		/// </summary>
 		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (CanExecuteProject (item as Project, context)) {
-				return context.ExecutionHandler.CanExecute (new UnityExecutionCommand (item.BaseDirectory.FullPath));
+			if (CanExecuteProject (item as Project, context)) 
+			{
+				// TODO
 			}
 			return base.CanExecute (item, context, configuration);
 		}
@@ -82,12 +80,12 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		/// </summary>
 		public override void Execute (MonoDevelop.Core.IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (CanExecuteProject (item as Project, context)) {
-				DispatchService.GuiDispatch (delegate {
-					IdeApp.Workbench.CurrentLayout = "Debug";
-					IdeApp.ProjectOperations.CurrentRunOperation = context.ExecutionHandler.Execute (new UnityExecutionCommand (item.BaseDirectory.FullPath), context.ConsoleFactory.CreateConsole (true));
-				});
-			} else {
+			if (CanExecuteProject (item as Project, context)) 
+			{
+				// TODO
+			} 
+			else 
+			{
 				base.Execute (monitor, item, context, configuration);
 			}
 		}
@@ -99,28 +97,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				return false;
 			}
 			return base.GetNeedsBuilding (item, configuration);
-		}
-		
-		#endregion
-	}
-	
-	/// <summary>
-	/// Unity execution command
-	/// </summary>
-	/// <remarks>
-	/// This is necessary to fake out the execution handler for an assembly project
-	/// </remarks>
-	public class UnityExecutionCommand: ExecutionCommand
-	{
-		public UnityExecutionCommand (string baseDirectory)
-		{
-			ProjectPath = baseDirectory;
-		}
-		
-		#region implemented abstract members of MonoDevelop.Core.Execution.ExecutionCommand
-		
-		public string ProjectPath {
-			get; private set;
 		}
 		
 		#endregion

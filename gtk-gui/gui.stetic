@@ -5,11 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../mono-repo/monodevelop/main/build/bin/Mono.TextEditor.dll" />
-    <widget-library name="MonoDevelop.Debugger.Soft, Version=2.4.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Debugger, Version=2.4.0.0, Culture=neutral" />
-    <widget-library name="../../../mono-repo/monodevelop/main/build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../mono-repo/monodevelop/main/build/AddIns/MonoDevelop.Debugger.Soft.Unity.dll" internal="true" />
+    <widget-library name="../../monodevelop/main/build/AddIns/MonoDevelop.Debugger.Soft.Unity/MonoDevelop.Debugger.Soft.Unity.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Debugger.Soft.Unity.GeneralOptionsPanel" design-size="300 300">
     <property name="MemberName" />
@@ -18,57 +14,6 @@
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
         <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.HBox" id="hbox1">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="label1">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Editor Location</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.FileChooserButton" id="unityChooser">
-                <property name="MemberName">unityChooser</property>
-                <property name="Title" translatable="yes">Browse to the Unity editor</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.CheckButton" id="launchCB">
-            <property name="MemberName">launchCB</property>
-            <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">_Launch Unity automatically</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">True</property>
-            <property name="UseUnderline">True</property>
-            <signal name="Toggled" handler="OnLaunchCBToggled" after="yes" />
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
         <child>
           <widget class="Gtk.CheckButton" id="buildCB">
             <property name="MemberName">buildCB</property>
@@ -79,7 +24,7 @@
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">0</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

@@ -73,14 +73,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		}
 		
 		/// <summary>
-		/// Whether to automatically launch Unity
-		/// </summary>
-		public static bool UnityLaunch {
-			get{ return PropertyService.Get (UnityLaunchProperty, true); }
-			set{ PropertyService.Set (UnityLaunchProperty, value); }
-		}
-		
-		/// <summary>
 		/// Whether to try to build Unity projects
 		/// </summary>
 		public static bool UnityBuild {

@@ -91,23 +91,15 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				return "Mono.Debugger.Soft.Unity";
 			}
 		}
-		
-		static readonly List<string> UserAssemblies = new List<string>{
-		};
 
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
-			return (command is UnityExecutionCommand && null == session);
+			return false;
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
-			var cmd = command as UnityExecutionCommand;
-			if (null == cmd){ return null; }
-			var msi = new UnityDebuggerStartInfo ("Unity");
-			// msi.SetUserAssemblies (null);
-			msi.Arguments = string.Format ("-projectPath \"{0}\"", cmd.ProjectPath);
-			return msi;
+			return null;
 		}
 
 		public DebuggerFeatures SupportedFeatures {
@@ -198,15 +190,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 	}
-	
-	class UnityDebuggerStartInfo : SoftDebuggerStartInfo
-	{
-		public UnityDebuggerStartInfo (string appName)
-			: base (new SoftDebuggerConnectArgs (appName, IPAddress.Loopback, 57432))
-		{
-		}
-	}
-
 
 	// Allows to define how to setup and tear down connection for debugger to connect to the
 	// debugee. For example to setup TCP tunneling over USB.
