@@ -56,8 +56,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		public UnitySoftDebuggerSession (ConnectorRegistry connectorRegistry)
 		{
 			this.connectorRegistry = connectorRegistry;
-			// unityPath = Util.UnityLocation;
-			
+
 			Adaptor.BusyStateChanged += (object sender, BusyStateEventArgs e) => SetBusyState (e);
 		}
 
