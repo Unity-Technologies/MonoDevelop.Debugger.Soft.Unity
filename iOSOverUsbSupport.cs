@@ -344,7 +344,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 						var name = GetNameForDevice(device);
 						var processId = connectors.GetProcessIdForUniqueId(device.udid);
 
-						processes.Add(new ProcessInfo(processId, "Unity USB: " + name));
+						processes.Add(new ProcessInfo(processId, "Unity iOS USB: " + name));
 						connectors.Connectors[processId] = new iOSUsbConnector(device.udid);
 					}
 				}

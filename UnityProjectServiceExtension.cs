@@ -80,9 +80,12 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		/// </summary>
 		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			// Poll for attachable processes so the players processes are available when trying to attach for the first time.
+			// HACK: Poll for attachable processes so the players processes are available when trying to attach for the first time.
 			if (!processesPolled) {
-				DispatchService.ThreadDispatch (delegate {
+				DispatchService.ThreadDispatch (delegate {					
+					// Hack: Poll twice, this increases the chances of iOS USB being ready
+					UnityDebuggerEngine.GetAttachableProcesses ();
+					System.Threading.Thread.Sleep(250);
 					UnityDebuggerEngine.GetAttachableProcesses ();
 				});
 				processesPolled = true;
@@ -201,6 +204,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				}
 
 				list.Add (new UnityExecutionTarget ("iOS Player", "Unity.Instance", "iPhonePlayer"));
+				list.Add (new UnityExecutionTarget ("iOS Player (USB)", "Unity.Instance", "Unity iOS USB"));
 				list.Add (new UnityExecutionTarget ("Android Player", "Unity.Instance", "AndroidPlayer"));
 
 				list.Add (new UnityExecutionTarget ("Attach To Process", "Unity.AttachToProcess", null));

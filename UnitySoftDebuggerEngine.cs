@@ -49,8 +49,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		static PlayerConnection unityPlayerConnection;
 
 		List<ProcessInfo> usbProcesses = new List<ProcessInfo>();
-		List<ProcessInfo> usbThreadProcesses = new List<ProcessInfo>();
 		bool usbProcessesFinished = true;
+		object usbLock = new object();
 
 		internal static Dictionary<uint, PlayerConnection.PlayerInfo> UnityPlayers {
 			get;
@@ -149,14 +149,17 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 			if (usbProcessesFinished)
 			{
-				usbProcesses = usbThreadProcesses;
 				usbProcessesFinished = false;
 
 				ThreadPool.QueueUserWorkItem (delegate {
-					usbThreadProcesses = new List<ProcessInfo>();
 					// Direct USB devices
-					iOSDevices.GetUSBDevices (ConnectorRegistry, usbThreadProcesses);
-					usbProcessesFinished = true;
+					lock(usbLock)
+					{
+						var usbThreadProcesses = new List<ProcessInfo>();
+						iOSDevices.GetUSBDevices (ConnectorRegistry, usbThreadProcesses);
+						usbProcesses = usbThreadProcesses;
+						usbProcessesFinished = true;
+					}
 				});
 			}
 
