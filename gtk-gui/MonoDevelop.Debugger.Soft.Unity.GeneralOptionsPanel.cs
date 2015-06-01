@@ -31,14 +31,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Editor Location");
+			this.label1.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Editor Location");
 			this.hbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.unityChooser = new global::Gtk.FileChooserButton (global::Mono.Unix.Catalog.GetString ("Browse to the Unity editor"), ((global::Gtk.FileChooserAction)(0)));
+			this.unityChooser = new global::Gtk.FileChooserButton (global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Browse to the Unity editor"), ((global::Gtk.FileChooserAction)(0)));
 			this.unityChooser.Name = "unityChooser";
 			this.hbox1.Add (this.unityChooser);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.unityChooser]));
@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			this.buildCB = new global::Gtk.CheckButton ();
 			this.buildCB.CanFocus = true;
 			this.buildCB.Name = "buildCB";
-			this.buildCB.Label = global::Mono.Unix.Catalog.GetString ("_Build project in MonoDevelop");
+			this.buildCB.Label = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("_Build project in MonoDevelop");
 			this.buildCB.DrawIndicator = true;
 			this.buildCB.UseUnderline = true;
 			this.vbox1.Add (this.buildCB);
