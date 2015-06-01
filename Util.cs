@@ -46,7 +46,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		
 		// Keys for PropertyService
 		public static readonly string UnityLocationProperty = "MonoDevelop.Debugger.Soft.Unity.UnityLocation";
-		public static readonly string UnityLaunchProperty = "MonoDevelop.Debugger.Soft.Unity.LaunchUnity";
 		public static readonly string UnityBuildProperty = "MonoDevelop.Debugger.Soft.Unity.BuildUnity";
 		
 		/// <summary>
