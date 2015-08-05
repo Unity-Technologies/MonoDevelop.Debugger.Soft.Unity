@@ -43,6 +43,7 @@
 		</MimeType>
 		<MimeType id="text/x-unitytxt" _description="Unity text metalanguage" isText="true">
 			<File pattern="*.txt" />
+			<File pattern="*.bindings" />
 		</MimeType>
 	</Extension>
 
