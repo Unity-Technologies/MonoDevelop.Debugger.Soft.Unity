@@ -52,6 +52,9 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		bool usbProcessesFinished = true;
 		object usbLock = new object();
 
+		List<ProcessInfo> unityProcesses = new List<ProcessInfo> ();
+		bool unityProcessesFinished = true;
+
 		internal static Dictionary<uint, PlayerConnection.PlayerInfo> UnityPlayers {
 			get;
 			private set;
@@ -107,7 +110,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		{
 			int index = 1;
 			List<ProcessInfo> processes = new List<ProcessInfo> ();
-			Process[] systemProcesses = Process.GetProcesses ();
+
 			StringComparison comparison = StringComparison.OrdinalIgnoreCase;
 			
 			if (null != unityPlayerConnection) {
@@ -131,21 +134,39 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					}
 				}
 			}
-			if (null != systemProcesses) {
-				foreach (Process p in systemProcesses) {
-					try {
-						if ((p.ProcessName.StartsWith ("unity", comparison) ||
-							p.ProcessName.Contains ("Unity.app")) &&
-							!p.ProcessName.Contains ("UnityShader") &&
-							!p.ProcessName.Contains ("UnityHelper") &&
-							!p.ProcessName.Contains ("Unity Helper")) {
-							processes.Add (new ProcessInfo (p.Id, string.Format ("{0} ({1})", "Unity Editor", p.ProcessName)));
+
+			if (unityProcessesFinished) 
+			{
+				unityProcessesFinished = false;
+
+				ThreadPool.QueueUserWorkItem (delegate {
+
+					Process[] systemProcesses = Process.GetProcesses();
+					var unityThreadProcesses = new List<ProcessInfo>();
+
+					if(systemProcesses != null)
+					{
+						foreach (Process p in systemProcesses) {
+							try {
+								if ((p.ProcessName.StartsWith ("unity", comparison) ||
+									p.ProcessName.Contains ("Unity.app")) &&
+									!p.ProcessName.Contains ("UnityShader") &&
+									!p.ProcessName.Contains ("UnityHelper") &&
+									!p.ProcessName.Contains ("Unity Helper")) {
+									unityThreadProcesses.Add (new ProcessInfo (p.Id, string.Format ("{0} ({1})", "Unity Editor", p.ProcessName)));
+								}
+							} catch {
+								// Don't care; continue
+							}
 						}
-					} catch {
-						// Don't care; continue
+
+						unityProcesses = unityThreadProcesses;
+						unityProcessesFinished = true;
 					}
-				}
+				});
 			}
+
+			processes.AddRange (unityProcesses);
 
 			if (usbProcessesFinished)
 			{
