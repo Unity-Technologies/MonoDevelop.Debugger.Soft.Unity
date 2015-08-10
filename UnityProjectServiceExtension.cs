@@ -44,6 +44,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		internal static string EditLayout = "Solution";
 		private DebuggerEngine unityDebuggerEngine = null;
 		bool processesPolled = false;
+		UnityExecutionCommand executionCommand = new UnityExecutionCommand();
 
 		DebuggerEngine UnityDebuggerEngine
 		{
@@ -90,6 +91,9 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				});
 				processesPolled = true;
 			}
+
+			if (context.ExecutionHandler != null)
+				context.ExecutionHandler.CanExecute (executionCommand);
 
 			if (CanExecuteProject (item as Project))
 				return true;

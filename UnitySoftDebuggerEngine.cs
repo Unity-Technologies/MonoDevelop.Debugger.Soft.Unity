@@ -89,11 +89,16 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 
-		public override bool CanDebugCommand (ExecutionCommand command)
+		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{
-			return false;
+			return cmd is UnityExecutionCommand;
 		}
-		
+
+		public override bool IsDefaultDebugger (ExecutionCommand cmd)
+		{
+			return cmd is UnityExecutionCommand;
+		}
+
 		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			return null;
@@ -195,6 +200,11 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 	}
+
+	class UnityExecutionCommand : ExecutionCommand
+	{
+
+	};
 
 	// Allows to define how to setup and tear down connection for debugger to connect to the
 	// debugee. For example to setup TCP tunneling over USB.
