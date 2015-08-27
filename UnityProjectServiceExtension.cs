@@ -216,7 +216,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				}
 
 				list.Add (new UnityExecutionTarget ("iOS Player", "Unity.Instance", "iPhonePlayer"));
-				list.Add (new UnityExecutionTarget ("iOS Player (USB)", "Unity.Instance", "Unity iOS USB"));
+
+				if(iOSDevices.Supported && iOSDevices.Initialized)
+					list.Add (new UnityExecutionTarget ("iOS Player (USB)", "Unity.Instance", "Unity iOS USB"));
+
 				list.Add (new UnityExecutionTarget ("Android Player", "Unity.Instance", "AndroidPlayer"));
 
 				list.Add (new UnityExecutionTarget ("Attach To Process", "Unity.AttachToProcess", null));
