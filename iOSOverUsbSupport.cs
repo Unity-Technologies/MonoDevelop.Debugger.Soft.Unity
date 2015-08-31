@@ -70,6 +70,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		public static UsbmuxdGetDeviceDelegate UsbmuxdGetDevice;
 
 
+		public static bool Supported { get { return loader != null; } }
 		public static bool IsDllLoaded { get { return dllHandle != IntPtr.Zero; } }
 
 
@@ -159,6 +160,9 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 		public IntPtr LoadLibrary(string fileName)
 		{
+			if (!File.Exists (fileName))
+				throw new FileNotFoundException (fileName);
+
 			// clear previous errors if any
 			dlerror();
 			var res = dlopen(fileName, RTLD_NOW);
@@ -202,6 +206,9 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 
 		IntPtr IDllLoader.LoadLibrary(string fileName) {
+			if (!File.Exists (fileName))
+				throw new FileNotFoundException (fileName);
+
 			return LoadLibrary(fileName);
 		}
 
@@ -296,7 +303,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			try {
 				descriptions = LoadDescriptions(path);
 			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError("Failed to load: " + path, e);
+				LoggingService.LogWarning("Failed to load: " + path, e);
 				descriptions = new iOSDeviceDescription[0];
 			}
 		}
@@ -310,7 +317,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					Usbmuxd.StartUsbmuxdListenThread();
 				return true;
 			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError("Error while initializing usbmuxd", e);
+				LoggingService.LogWarning("Error while initializing usbmuxd", e);
 				return false;
 			}
 		}
@@ -330,10 +337,24 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			return SetupDll(path);
 		}
 
+		public static bool Supported
+		{
+			get {
+				return Usbmuxd.Supported;
+			}
+		}
+
+		public static bool Initialized
+		{
+			get
+			{
+				return Usbmuxd.IsDllLoaded || Setup();
+			}
+		}
 
 		public static void GetUSBDevices(ConnectorRegistry connectors, List<ProcessInfo> processes)
 		{
-			if (!Usbmuxd.IsDllLoaded && !Setup())
+			if (!Initialized)
 				return;
 
 			try {
@@ -349,7 +370,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					}
 				}
 			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError("Error while getting USB devices", e);
+				LoggingService.LogError("Error while getting USB devices", e);
 			}
 		}
 

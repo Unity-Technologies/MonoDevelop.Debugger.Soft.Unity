@@ -182,7 +182,19 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					lock(usbLock)
 					{
 						var usbThreadProcesses = new List<ProcessInfo>();
-						iOSDevices.GetUSBDevices (ConnectorRegistry, usbThreadProcesses);
+
+						try
+						{
+							iOSDevices.GetUSBDevices (ConnectorRegistry, usbThreadProcesses);
+						}
+						catch(NotSupportedException)
+						{
+							LoggingService.LogInfo("iOS over USB not supported on this platform");
+						}
+						catch(Exception e)
+						{
+							LoggingService.LogError("iOS USB Error: " + e);
+						}
 						usbProcesses = usbThreadProcesses;
 						usbProcessesFinished = true;
 					}
