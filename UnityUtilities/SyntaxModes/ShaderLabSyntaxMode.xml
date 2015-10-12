@@ -28,23 +28,21 @@
 <SyntaxMode name = "ShaderLab" mimeTypes="text/x-shader" ignorecase="true" extends="text/x-cgsrc">
 	<Property name="LineComment">//</Property>
 	<Property name="StringQuote">"</Property>
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
-	
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
-	
-	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor.empty">#pragma</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor.empty">CGPROGRAM</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor.empty">ENDCG</EolSpan>
+
+	<Span color = "String" rule = "String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Match color = "constant.digit">CSharpNumber</Match>
+
+	<Match color = "Number">CSharpNumber</Match>
 	
-	<Keywords color = "text.preprocessor">
-		<Word>CGPROGRAM</Word>
-		<Word>ENDCG</Word>
-	</Keywords>
-	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>TexGen</Word>
 		<Word>LightmapMode</Word>
 		<Word>SetTexture</Word>
@@ -82,23 +80,8 @@
 		<Word>BorderScale</Word>
 		<Word>Fallback</Word>
 	</Keywords>
-	
-	<Keywords color = "keyword.selection">
-	</Keywords>
-	
-	<Keywords color = "keyword.iteration">
-	</Keywords>
-	
-	<Keywords color = "keyword.jump">
-	</Keywords>
-	
-	<Keywords color = "keyword.context">
-	</Keywords>
-	
-	<Keywords color = "keyword.exceptions">
-	</Keywords>
-	
-	<Keywords color = "constant.language">
+
+	<Keywords color = "Keyword(Type)">
 		<Word>On</Word>
 		<Word>Off</Word>
 		<Word>ObjectLinear</Word>
@@ -151,10 +134,7 @@
 		<Word>Texcoord1</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
-	</Keywords>
-	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>Shader</Word>
 		<Word>Properties</Word>
 		<Word>SubShader</Word>
@@ -190,47 +170,14 @@
 		<Word>Constant</Word>
 		<Word>Previous</Word>
 	</Keywords>
-	
-	<Keywords color = "constant.language.void">
-	</Keywords>
-	
-	<Keywords color = "keyword.namespace">
-	</Keywords>
-	
-	<Keywords color = "keyword.property">
-	</Keywords>
-	
-	<Keywords color = "keyword.declaration">
-	</Keywords>
-	
-	<Keywords color = "keyword.parameter">
-	</Keywords>
-	
-	
-	<Keywords color = "keyword.operator.declaration">
-	</Keywords>
-	
-	<Keywords color = "keyword.misc">
-	</Keywords>
 
-	<Rule name = "text.preprocessor">
-		<Keywords color="text.preprocessor.keyword">
-			<Word>pragma</Word>
-		</Keywords>
-	</Rule>
-	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
 		</Keywords>	
 	</Rule>
-	
-	<Rule name = "String">
-	</Rule>
-	
-	<Rule name = "XmlDocumentationTag">
-	</Rule>
-	
-	<Keywords color="keyword.type">
-	</Keywords>
 
 </SyntaxMode>
