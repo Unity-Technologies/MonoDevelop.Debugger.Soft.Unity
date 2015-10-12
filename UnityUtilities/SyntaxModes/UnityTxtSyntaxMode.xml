@@ -24,40 +24,38 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "UnityTxt" mimeTypes="text/x-unitytxt" ignorecase="true" extends="text/x-csharp">
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor">CONDITIONAL</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor.empty">CONDITIONAL</EolSpan>
 	<EolSpan color = "comment.doc" rule="CommentDocumentation" tagColor="comment.tag.doc">///</EolSpan>
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
-	
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#include</EolSpan>
+
 	<Property name="LineComment">//</Property>
 	<Property name="BlockCommentStart">/*</Property>
 	<Property name="BlockCommentEnd">*/</Property>
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string.other" rule="String" stopateol = "false" escape='""'>
+	<Span color = "String" rule="String" stopateol = "false" escape='""'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
+	<Span color = "String" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "constant.digit">CSharpNumber</Match>
-	
-	<Keywords color = "text.preprocessor.keyword" ignorecase="false" >
+	<Keywords color = "Preprocessor" ignorecase="false" >
 		<Word>CSRAW</Word>
 		<Word>CSNONE</Word>
 		<Word>CLASS</Word>
@@ -80,24 +78,25 @@
 		<Word>STRUCT</Word>
 	</Keywords>
 	
-	<Match color = "text.preprocessor.keyword">C\+\+RAW</Match>
-	<Match color = "text.preprocessor.keyword">BEGIN DOC</Match>
-	<Match color = "text.preprocessor.keyword">END DOC</Match>
-	<Match color = "text.preprocessor.keyword">BEGIN EX</Match>
-	<Match color = "text.preprocessor.keyword">END EX</Match>
+	<Match color =  "Preprocessor">C\+\+RAW</Match>
+	<Match color =  "Preprocessor">BEGIN DOC</Match>
+	<Match color =  "Preprocessor">END DOC</Match>
+	<Match color =  "Preprocessor">BEGIN EX</Match>
+	<Match color =  "Preprocessor">END EX</Match>
 	
 	<Rule name = "text.preprocessor">
 	<Keywords color = "text.preprocessor.keyword">
 		<Word>include</Word>
 	</Keywords>
 	</Rule>
-	
+	<Match color = "Constant(Digit)">CSharpNumber</Match>
+
 	<Rule name = "CommentDocumentation">
 		<Span color = "string" stopateol = "true" escape="\" rule="String" >
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Keywords color="comment.keyword">
+		<Keywords color="Keyword(Comment)">
 			<Word>@c</Word>
 			<Word>@code</Word>
 			<Word>@example</Word>
