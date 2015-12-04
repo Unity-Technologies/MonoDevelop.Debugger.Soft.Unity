@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
-using Mono.Debugging.Soft;
 using System.Net;
 
 namespace MonoDevelop.Debugger.Soft.Unity
@@ -72,7 +71,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			run = false;
 		}
 
-		public static SoftDebuggerStartInfo GetUnitySoftDebuggerStartInfo(long processId, ref IUnityDbgConnector connector)
+		public static UnityAttachInfo GetUnityAttachInfo(long processId, ref IUnityDbgConnector connector)
 		{
 			if (ConnectorRegistry.Connectors.ContainsKey((uint)processId)) {
 				connector = ConnectorRegistry.Connectors[(uint)processId];
@@ -83,14 +82,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					? (int)(56000 + (processId % 1000))
 					: (int)player.m_DebuggerPort);
 				try {
-					return new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (player.m_Id, player.m_IPEndPoint.Address, (int)port));
+					return new UnityAttachInfo (player.m_Id, player.m_IPEndPoint.Address, (int)port);
 				} catch (Exception ex) {
 					throw new Exception (string.Format ("Unable to attach to {0}:{1}", player.m_IPEndPoint.Address, port), ex);
 				}
 			}
 
 			long defaultPort = 56000 + (processId % 1000);
-			return new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (null, IPAddress.Loopback, (int)defaultPort));
+			return new UnityAttachInfo (null, IPAddress.Loopback, (int)defaultPort);
 		}
 
 		public static UnityProcessInfo[] GetAttachableProcessesAsync ()
@@ -235,7 +234,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	// debugee. For example to setup TCP tunneling over USB.
 	public interface IUnityDbgConnector
 	{
-		SoftDebuggerStartInfo SetupConnection();
+		UnityAttachInfo SetupConnection();
 		void OnDisconnect();
 	}
 

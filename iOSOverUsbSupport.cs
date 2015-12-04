@@ -14,11 +14,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		readonly string udid;
 		readonly ushort port = 12000;
 
-		public SoftDebuggerStartInfo SetupConnection()
+		public UnityAttachInfo SetupConnection()
 		{
 			Usbmuxd.StartIosProxy(port, 56000, udid);
-			var args = new SoftDebuggerConnectArgs(udid, IPAddress.Loopback, port);
-			return new SoftDebuggerStartInfo(args);
+			return new UnityAttachInfo(udid, IPAddress.Loopback, port);
 		}
 
 		public void OnDisconnect()

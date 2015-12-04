@@ -31,7 +31,6 @@ using System;
 using Mono.Debugging.Soft;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Client;
-using System.Net;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -63,7 +62,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 		public SoftDebuggerStartInfo GetUnitySoftDebuggerStartInfo(long processId)
 		{
-			return UnityProcessDiscovery.GetUnitySoftDebuggerStartInfo (processId, ref currentConnector);
+			var attachInfo = UnityProcessDiscovery.GetUnityAttachInfo (processId, ref currentConnector);
+			return new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (attachInfo.AppName, attachInfo.Address, attachInfo.Port));
 		}
 			
 		protected override void EndSession ()
