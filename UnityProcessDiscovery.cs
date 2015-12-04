@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 using Mono.Debugging.Soft;
+using System.Net;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -69,6 +70,27 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		public static void Stop()
 		{
 			run = false;
+		}
+
+		public static SoftDebuggerStartInfo GetUnitySoftDebuggerStartInfo(long processId, ref IUnityDbgConnector connector)
+		{
+			if (ConnectorRegistry.Connectors.ContainsKey((uint)processId)) {
+				connector = ConnectorRegistry.Connectors[(uint)processId];
+				return connector.SetupConnection();
+			} else if (UnityProcessDiscovery.UnityPlayers.ContainsKey ((uint)processId)) {
+				PlayerConnection.PlayerInfo player = UnityProcessDiscovery.UnityPlayers[(uint)processId];
+				int port = (0 == player.m_DebuggerPort
+					? (int)(56000 + (processId % 1000))
+					: (int)player.m_DebuggerPort);
+				try {
+					return new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (player.m_Id, player.m_IPEndPoint.Address, (int)port));
+				} catch (Exception ex) {
+					throw new Exception (string.Format ("Unable to attach to {0}:{1}", player.m_IPEndPoint.Address, port), ex);
+				}
+			}
+
+			long defaultPort = 56000 + (processId % 1000);
+			return new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (null, IPAddress.Loopback, (int)defaultPort));
 		}
 
 		public static UnityProcessInfo[] GetAttachableProcessesAsync ()
