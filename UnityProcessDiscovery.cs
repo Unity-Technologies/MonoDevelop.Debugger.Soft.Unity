@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -168,6 +169,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 			return processes.ToArray ();
 		}
+	}
+
+	// Allows to define how to setup and tear down connection for debugger to connect to the
+	// debugee. For example to setup TCP tunneling over USB.
+	public interface IUnityDbgConnector
+	{
+		SoftDebuggerStartInfo SetupConnection();
+		void OnDisconnect();
 	}
 
 	public class ConnectorRegistry

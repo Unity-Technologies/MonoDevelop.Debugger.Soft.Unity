@@ -88,12 +88,4 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	class UnityExecutionCommand : ExecutionCommand
 	{
 	};
-
-	// Allows to define how to setup and tear down connection for debugger to connect to the
-	// debugee. For example to setup TCP tunneling over USB.
-	public interface IUnityDbgConnector
-	{
-		SoftDebuggerStartInfo SetupConnection();
-		void OnDisconnect();
-	}
 }
