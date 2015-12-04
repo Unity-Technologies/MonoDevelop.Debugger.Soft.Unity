@@ -101,7 +101,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					// Direct USB devices
 					lock(usbLock)
 					{
-						var usbThreadProcesses = GetUnityiOSUsbProcesses();
+						usbProcesses = GetUnityiOSUsbProcesses();
 						usbProcessesFinished = true;
 					}
 				});
