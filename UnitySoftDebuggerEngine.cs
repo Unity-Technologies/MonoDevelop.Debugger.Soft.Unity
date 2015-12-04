@@ -75,7 +75,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		
 		public override ProcessInfo[] GetAttachableProcesses ()
 		{
-			return UnityProcessDiscovery.GetAttachableProcesses ().Select (p => new ProcessInfo (p.Id, p.Name)).ToArray();
+			return UnityProcessDiscovery.GetAttachableProcessesAsync ().Select (p => new ProcessInfo (p.Id, p.Name)).ToArray();
 		}
 
 		public string Name {
