@@ -46,7 +46,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 
-		UnitySoftDebuggerEngine()
+		public UnitySoftDebuggerEngine()
 		{
 			UnityProcessDiscovery.AddLogger (new DebuggerLogger ());
 		}
