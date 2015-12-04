@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
-using Mono.Debugging.Client;
 using Mono.Debugging.Soft;
 using MonoDevelop.Core;
 
@@ -352,7 +351,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 
-		public static void GetUSBDevices(ConnectorRegistry connectors, List<ProcessInfo> processes)
+		public static void GetUSBDevices(ConnectorRegistry connectors, List<UnityProcessInfo> processes)
 		{
 			if (!Initialized)
 				return;
@@ -365,7 +364,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 						var name = GetNameForDevice(device);
 						var processId = connectors.GetProcessIdForUniqueId(device.udid);
 
-						processes.Add(new ProcessInfo(processId, "Unity iOS USB: " + name));
+						processes.Add(new UnityProcessInfo(processId, "Unity iOS USB: " + name));
 						connectors.Connectors[processId] = new iOSUsbConnector(device.udid);
 					}
 				}

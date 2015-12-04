@@ -26,67 +26,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.IO;
-using System.Net;
-using System.Threading;
-using System.Reflection;
-using System.Diagnostics;
-using System.Collections.Generic;
-
+using System.Linq;
 using MonoDevelop.Debugger;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
-using MonoDevelop.Debugger.Soft;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
 	public class UnitySoftDebuggerEngine: DebuggerEngineBackend
 	{
 		UnitySoftDebuggerSession session;
-		static PlayerConnection unityPlayerConnection;
 
-		List<ProcessInfo> usbProcesses = new List<ProcessInfo>();
-		bool usbProcessesFinished = true;
-		object usbLock = new object();
-
-		List<ProcessInfo> unityProcesses = new List<ProcessInfo> ();
-		bool unityProcessesFinished = true;
-
-		internal static Dictionary<uint, PlayerConnection.PlayerInfo> UnityPlayers {
-			get;
-			private set;
+		class DebuggerLogger : UnityProcessDiscovery.ILogger
+		{
+			public void Log(string message)
+			{
+				DebuggerLoggingService.LogMessage(message);
+			}
 		}
 
-		internal static ConnectorRegistry ConnectorRegistry { get; private set; }
-
-
-		static UnitySoftDebuggerEngine ()
+		UnitySoftDebuggerEngine()
 		{
-			UnityPlayers = new Dictionary<uint, PlayerConnection.PlayerInfo> ();
-			ConnectorRegistry = new ConnectorRegistry();
-			
-			bool run = true;
-		
-			MonoDevelop.Ide.IdeApp.Exiting += (sender, args) => run = false;
-
-			try {
-			// HACK: Poll Unity players
-			unityPlayerConnection = new PlayerConnection ();
-			ThreadPool.QueueUserWorkItem (delegate {
-				while (run) {
-					lock (unityPlayerConnection) {
-						unityPlayerConnection.Poll ();
-					}
-					Thread.Sleep (1000);
-				}
-			});
-			} catch (Exception e)
-			{
-				MonoDevelop.Core.LoggingService.LogError ("Error launching player connection discovery service: Unity player discovery will be unavailable", e);
-			}
+			UnityProcessDiscovery.AddLogger (new DebuggerLogger ());
 		}
 
 		public override bool CanDebugCommand (ExecutionCommand cmd)
@@ -106,104 +68,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			
 		public override DebuggerSession CreateSession ()
 		{
-			session = new UnitySoftDebuggerSession (ConnectorRegistry);
+			session = new UnitySoftDebuggerSession (UnityProcessDiscovery.ConnectorRegistry);
 			session.TargetExited += delegate{ session = null; };
 			return session;
 		}
 		
 		public override ProcessInfo[] GetAttachableProcesses ()
 		{
-			int index = 1;
-			List<ProcessInfo> processes = new List<ProcessInfo> ();
-
-			StringComparison comparison = StringComparison.OrdinalIgnoreCase;
-			
-			if (null != unityPlayerConnection) {
-				if(Monitor.TryEnter (unityPlayerConnection)) {
-					try {
-						foreach (string player in unityPlayerConnection.AvailablePlayers) {
-							try {
-								PlayerConnection.PlayerInfo info = PlayerConnection.PlayerInfo.Parse (player);
-								if (info.m_AllowDebugging) {
-									UnityPlayers[info.m_Guid] = info;
-									processes.Add (new ProcessInfo (info.m_Guid, info.m_Id));
-									++index;
-								}
-							} catch {
-								// Don't care; continue
-							}
-						}
-					}
-					finally {
-						Monitor.Exit (unityPlayerConnection);
-					}
-				}
-			}
-
-			if (unityProcessesFinished) 
-			{
-				unityProcessesFinished = false;
-
-				ThreadPool.QueueUserWorkItem (delegate {
-
-					Process[] systemProcesses = Process.GetProcesses();
-					var unityThreadProcesses = new List<ProcessInfo>();
-
-					if(systemProcesses != null)
-					{
-						foreach (Process p in systemProcesses) {
-							try {
-								if ((p.ProcessName.StartsWith ("unity", comparison) ||
-									p.ProcessName.Contains ("Unity.app")) &&
-									!p.ProcessName.Contains ("UnityShader") &&
-									!p.ProcessName.Contains ("UnityHelper") &&
-									!p.ProcessName.Contains ("Unity Helper")) {
-									unityThreadProcesses.Add (new ProcessInfo (p.Id, string.Format ("{0} ({1})", "Unity Editor", p.ProcessName)));
-								}
-							} catch {
-								// Don't care; continue
-							}
-						}
-
-						unityProcesses = unityThreadProcesses;
-						unityProcessesFinished = true;
-					}
-				});
-			}
-
-			processes.AddRange (unityProcesses);
-
-			if (usbProcessesFinished)
-			{
-				usbProcessesFinished = false;
-
-				ThreadPool.QueueUserWorkItem (delegate {
-					// Direct USB devices
-					lock(usbLock)
-					{
-						var usbThreadProcesses = new List<ProcessInfo>();
-
-						try
-						{
-							iOSDevices.GetUSBDevices (ConnectorRegistry, usbThreadProcesses);
-						}
-						catch(NotSupportedException)
-						{
-							LoggingService.LogInfo("iOS over USB not supported on this platform");
-						}
-						catch(Exception e)
-						{
-							LoggingService.LogError("iOS USB Error: " + e);
-						}
-						usbProcesses = usbThreadProcesses;
-						usbProcessesFinished = true;
-					}
-				});
-			}
-
-			processes.AddRange (usbProcesses);
-
-			return processes.ToArray ();
+			return UnityProcessDiscovery.GetAttachableProcesses ().Select (p => new ProcessInfo (p.Id, p.Name)).ToArray();
 		}
 
 		public string Name {
@@ -215,7 +87,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 	class UnityExecutionCommand : ExecutionCommand
 	{
-
 	};
 
 	// Allows to define how to setup and tear down connection for debugger to connect to the
@@ -224,56 +95,5 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	{
 		SoftDebuggerStartInfo SetupConnection();
 		void OnDisconnect();
-	}
-
-
-	// Manages a map from process id to IUnityDbgConnector, so that services can supply a list of
-	// debugees and how to connect to them, and UnitySoftDebuggerSession can have a way for
-	// establishing a connection to them.
-	public class ConnectorRegistry
-	{
-		// This is used to map process id <-> unique string id. MonoDevelop attachment is built
-		// around process ids.
-		object processIdLock = new object();
-		uint nextProcessId = 1000000;
-		Dictionary<uint, string> processIdToUniqueId = new Dictionary<uint, string>();
-		Dictionary<string, uint> uniqueIdToProcessId = new Dictionary<string, uint>();
-
-		public Dictionary<uint, IUnityDbgConnector> Connectors { get; private set; }
-
-
-		public uint GetProcessIdForUniqueId(string uid)
-		{
-			lock (processIdLock)
-			{
-				uint processId;
-				if (uniqueIdToProcessId.TryGetValue(uid, out processId))
-					return processId;
-
-				processId = nextProcessId++;
-				processIdToUniqueId.Add(processId, uid);
-				uniqueIdToProcessId.Add(uid, processId);
-
-				return processId;
-			}
-		}
-
-
-		public string GetUniqueIdFromProcessId(uint processId)
-		{
-			lock (processIdLock) {
-				string uid;
-				if (processIdToUniqueId.TryGetValue(processId, out uid))
-					return uid;
-
-				return null;
-			}
-		}
-
-
-		public ConnectorRegistry()
-		{
-			Connectors = new Dictionary<uint, IUnityDbgConnector>();
-		}
 	}
 }

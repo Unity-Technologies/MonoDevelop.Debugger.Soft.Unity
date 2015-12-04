@@ -28,19 +28,10 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugger;
-using Mono.Debugging;
 using Mono.Debugging.Soft;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Client;
-using System.Threading;
-using System.Diagnostics;
-using System.IO;
-using MonoDevelop.Core;
-using System.Net.Sockets;
 using System.Net;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -74,8 +65,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				currentConnector = connectorRegistry.Connectors[(uint)processId];
 				StartConnecting(currentConnector.SetupConnection(), 3, 1000);
 				return;
-			} else if (UnitySoftDebuggerEngine.UnityPlayers.ContainsKey ((uint)processId)) {
-				PlayerConnection.PlayerInfo player = UnitySoftDebuggerEngine.UnityPlayers[(uint)processId];
+			} else if (UnityProcessDiscovery.UnityPlayers.ContainsKey ((uint)processId)) {
+				PlayerConnection.PlayerInfo player = UnityProcessDiscovery.UnityPlayers[(uint)processId];
 				int port = (0 == player.m_DebuggerPort
 					? (int)(56000 + (processId % 1000))
 					: (int)player.m_DebuggerPort);

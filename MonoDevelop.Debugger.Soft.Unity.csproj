@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\monodevelop\main\build\AddIns\MonoDevelop.Debugger.Soft.Unity</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;UNITY_IOS_USB_ATTACH</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
@@ -34,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>UNITY_IOS_USB_ATTACH</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -97,6 +98,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.Soft.Unity.GeneralOptionsPanel.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="PlayerConnection.cs" />
+    <Compile Include="UnityProcessDiscovery.cs" />
+    <Compile Include="UnityProcessInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
