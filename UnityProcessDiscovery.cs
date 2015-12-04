@@ -156,6 +156,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					try {
 						if ((p.ProcessName.StartsWith ("unity", comparison) ||
 							p.ProcessName.Contains ("Unity.app")) &&
+							!p.ProcessName.Contains ("UnityDebug") &&
 							!p.ProcessName.Contains ("UnityShader") &&
 							!p.ProcessName.Contains ("UnityHelper") &&
 							!p.ProcessName.Contains ("Unity Helper")) {
