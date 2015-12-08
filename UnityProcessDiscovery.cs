@@ -8,12 +8,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 {
 	public static class UnityProcessDiscovery
 	{
-		public interface ILogger
-		{
-			void Log (string message);
-		}
-
-		static List<ILogger> loggers = new List<ILogger>();
 		static readonly PlayerConnection unityPlayerConnection;
 
 		static List<UnityProcessInfo> usbProcesses = new List<UnityProcessInfo>();
@@ -51,19 +45,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			} 
 			catch (Exception e)
 			{
-				Log ("Error launching player connection discovery service: Unity player discovery will be unavailable\n" + e);
+				Log.Error ("Error launching player connection discovery service: Unity player discovery will be unavailable", e);
 			}
-		}
-
-		static void Log(string message)
-		{
-			foreach (var logger in loggers)
-				logger.Log (message);
-		}
-
-		public static void AddLogger(ILogger logger)
-		{
-			loggers.Add (logger);
 		}
 
 		public static void Stop()
@@ -210,20 +193,18 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		{
 			var processes = new List<UnityProcessInfo>();
 
-			#if UNITY_IOS_USB_ATTACH
 			try
 			{
 				iOSDevices.GetUSBDevices (ConnectorRegistry, processes);
 			}
 			catch(NotSupportedException)
 			{
-				Log("iOS over USB not supported on this platform");
+				Log.Info("iOS over USB not supported on this platform");
 			}
 			catch(Exception e)
 			{
-				Log("iOS USB Error: " + e);
+				Log.Info("iOS USB Error: " + e);
 			}
-			#endif
 
 			return processes;
 		}

@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
-using Mono.Debugging.Soft;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -30,7 +28,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			this.udid = udid;
 		}
 	}
-
 
 	static class Usbmuxd
 	{
@@ -301,7 +298,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			try {
 				descriptions = LoadDescriptions(path);
 			} catch (Exception e) {
-				LoggingService.LogWarning("Failed to load: " + path, e);
+				Log.Warning("Failed to load: " + path, e);
 				descriptions = new iOSDeviceDescription[0];
 			}
 		}
@@ -315,7 +312,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					Usbmuxd.StartUsbmuxdListenThread();
 				return true;
 			} catch (Exception e) {
-				LoggingService.LogWarning("Error while initializing usbmuxd", e);
+				Log.Warning("Error while initializing usbmuxd", e);
 				return false;
 			}
 		}
@@ -368,7 +365,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError("Error while getting USB devices", e);
+				Log.Error("Error while getting USB devices", e);
 			}
 		}
 

@@ -26,10 +26,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
+using System;
 using System.Linq;
 using MonoDevelop.Debugger;
 using MonoDevelop.Core.Execution;
-using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Soft.Unity
@@ -38,17 +39,27 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	{
 		UnitySoftDebuggerSession session;
 
-		class DebuggerLogger : UnityProcessDiscovery.ILogger
+		class DebuggerLogger : Log.ILogger
 		{
-			public void Log(string message)
+			public void Info(string message)
 			{
-				DebuggerLoggingService.LogMessage(message);
+				DebuggerLoggingService.LogMessage (message);
+			}
+
+			public void Warning (string message, Exception e)
+			{
+				throw new System.NotImplementedException ();
+			}
+
+			public void Error (string message, Exception e)
+			{
+				DebuggerLoggingService.LogError (message, e);
 			}
 		}
 
 		public UnitySoftDebuggerEngine()
 		{
-			UnityProcessDiscovery.AddLogger (new DebuggerLogger ());
+			Log.AddLogger (new DebuggerLogger ());
 		}
 
 		public override bool CanDebugCommand (ExecutionCommand cmd)
