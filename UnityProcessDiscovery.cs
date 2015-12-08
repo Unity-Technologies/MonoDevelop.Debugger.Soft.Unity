@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 using System.Net;
+using System.Linq;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -161,7 +162,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			if (null != unityPlayerConnection) 
 			{
 				if (block)
+				{
 					Monitor.Enter (unityPlayerConnection);
+
+					for (int i = 0; i < 12 && !unityPlayerConnection.AvailablePlayers.Any (); ++i) {
+						unityPlayerConnection.Poll ();
+						Thread.Sleep (250);
+					}
+				}
 				else
 					if(!Monitor.TryEnter(unityPlayerConnection))
 						return processes;
