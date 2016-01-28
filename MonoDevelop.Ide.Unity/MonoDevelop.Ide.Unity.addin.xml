@@ -1,0 +1,14 @@
+<Addin id = "MonoDevelop.Ide.Unity"
+       name	     = "MonoDevelop IDE Unity Extensions"
+       author	 = "Lukasz Paczkowski"
+       url       = "http://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity"
+       description = "MonoDevelop IDE Unity Extensions"
+       copyright   = "MIT X11"
+       category = "Unity"
+       version   = "5.10.0">
+	<Dependencies>
+		<Addin id="MonoDevelop.Ide" version="5.10"/>
+		<Addin id="MonoDevelop.Core" version="5.10"/>
+		<Addin id="MonoDevelop.SourceEditor2" version="5.10"/>
+	</Dependencies>
+</Addin>
