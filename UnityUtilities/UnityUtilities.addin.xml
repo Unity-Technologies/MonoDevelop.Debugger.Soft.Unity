@@ -5,12 +5,12 @@
        description = "Utilities for use with Unity"
        copyright   = "MIT X11"
        category = "Unity"
-       version   = "5.9.0">
+       version   = "5.10.0">
 
 	<Dependencies>
-		<Addin id="MonoDevelop.Ide" version="5.9"/>
-		<Addin id="MonoDevelop.Core" version="5.9"/>
-		<Addin id="MonoDevelop.SourceEditor2" version="5.9"/>
+		<Addin id="MonoDevelop.Ide" version="5.10"/>
+		<Addin id="MonoDevelop.Core" version="5.10"/>
+		<Addin id="MonoDevelop.SourceEditor2" version="5.10"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Help">
