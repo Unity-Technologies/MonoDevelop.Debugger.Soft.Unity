@@ -9,6 +9,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 {
 	public static class UnityProcessDiscovery
 	{
+		[Flags]
+		public enum GetProcessOptions
+		{
+			Editor = (1 << 0),
+			Players = (1 << 1),
+			All = Editor | Players
+		};
+
 		static readonly PlayerConnection unityPlayerConnection;
 
 		static List<UnityProcessInfo> usbProcesses = new List<UnityProcessInfo>();
@@ -117,12 +125,17 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			return processes.ToArray ();
 		}
 
-		public static List<UnityProcessInfo> GetAttachableProcesses ()
+		public static List<UnityProcessInfo> GetAttachableProcesses (GetProcessOptions options = GetProcessOptions.All)
 		{
 			List<UnityProcessInfo> processes = new List<UnityProcessInfo> ();
-			processes.AddRange (GetUnityPlayerProcesses (true));
-			processes.AddRange (GetUnityEditorProcesses ());
-			processes.AddRange (GetUnityiOSUsbProcesses ());
+
+			if((options & GetProcessOptions.Editor) == GetProcessOptions.Editor)
+				processes.AddRange (GetUnityEditorProcesses ());
+	
+			if ((options & GetProcessOptions.Players) == GetProcessOptions.Players) {
+				processes.AddRange (GetUnityPlayerProcesses (true));
+				processes.AddRange (GetUnityiOSUsbProcesses ());
+			}
 
 			return processes;
 		}
