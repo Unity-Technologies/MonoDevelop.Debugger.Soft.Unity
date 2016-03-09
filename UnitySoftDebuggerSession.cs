@@ -28,19 +28,9 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugger;
-using Mono.Debugging;
 using Mono.Debugging.Soft;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Client;
-using System.Threading;
-using System.Diagnostics;
-using System.IO;
-using MonoDevelop.Core;
-using System.Net.Sockets;
-using System.Net;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -49,14 +39,11 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	/// </summary>
 	public class UnitySoftDebuggerSession : SoftDebuggerSession
 	{
-		ConnectorRegistry connectorRegistry;
 		// Connector that was used to make connection for current session.
 		IUnityDbgConnector currentConnector;
 		
-		public UnitySoftDebuggerSession (ConnectorRegistry connectorRegistry)
+		public UnitySoftDebuggerSession ()
 		{
-			this.connectorRegistry = connectorRegistry;
-
 			Adaptor.BusyStateChanged += (object sender, BusyStateEventArgs e) => SetBusyState (e);
 		}
 
@@ -70,27 +57,15 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		
 		protected override void OnAttachToProcess (long processId)
 		{
-			if (connectorRegistry.Connectors.ContainsKey((uint)processId)) {
-				currentConnector = connectorRegistry.Connectors[(uint)processId];
-				StartConnecting(currentConnector.SetupConnection(), 3, 1000);
-				return;
-			} else if (UnitySoftDebuggerEngine.UnityPlayers.ContainsKey ((uint)processId)) {
-				PlayerConnection.PlayerInfo player = UnitySoftDebuggerEngine.UnityPlayers[(uint)processId];
-				int port = (0 == player.m_DebuggerPort
-					? (int)(56000 + (processId % 1000))
-					: (int)player.m_DebuggerPort);
-				try {
-					StartConnecting (new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (player.m_Id, player.m_IPEndPoint.Address, (int)port)), 3, 1000);
-				} catch (Exception ex) {
-					throw new Exception (string.Format ("Unable to attach to {0}:{1}", player.m_IPEndPoint.Address, port), ex);
-				}
-				return;
-			}
-
-			long defaultPort = 56000 + (processId % 1000);
-			StartConnecting(new SoftDebuggerStartInfo(new SoftDebuggerConnectArgs(null, IPAddress.Loopback, (int)defaultPort)), 3, 1000);
+			StartConnecting (GetUnitySoftDebuggerStartInfo (processId), 3, 1000);
 		}
 
+		public SoftDebuggerStartInfo GetUnitySoftDebuggerStartInfo(long processId)
+		{
+			var attachInfo = UnityProcessDiscovery.GetUnityAttachInfo (processId, ref currentConnector);
+			return new SoftDebuggerStartInfo (new SoftDebuggerConnectArgs (attachInfo.AppName, attachInfo.Address, attachInfo.Port));
+		}
+			
 		protected override void EndSession ()
 		{
 			Detach ();

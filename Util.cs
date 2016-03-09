@@ -28,8 +28,7 @@
 
 using System;
 using System.IO;
-
-using MonoDevelop.Ide;
+using System.Reflection;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.Unity
@@ -97,7 +96,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			// installed side-by-side with Unity.
 			if(string.IsNullOrEmpty(unityLocation) || !File.Exists (unityLocation))
 			{
-				string mdLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
+				string mdLocation = Assembly.GetEntryAssembly().Location;
 
 				string sxsPath = string.Empty;
 				if(Platform.IsMac && mdLocation.Contains ("MonoDevelop.app")) {

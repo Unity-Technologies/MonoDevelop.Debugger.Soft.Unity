@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
-using Mono.Debugging.Client;
-using Mono.Debugging.Soft;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -15,11 +12,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		readonly string udid;
 		readonly ushort port = 12000;
 
-		public SoftDebuggerStartInfo SetupConnection()
+		public UnityAttachInfo SetupConnection()
 		{
 			Usbmuxd.StartIosProxy(port, 56000, udid);
-			var args = new SoftDebuggerConnectArgs(udid, IPAddress.Loopback, port);
-			return new SoftDebuggerStartInfo(args);
+			return new UnityAttachInfo(udid, IPAddress.Loopback, port);
 		}
 
 		public void OnDisconnect()
@@ -32,7 +28,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			this.udid = udid;
 		}
 	}
-
 
 	static class Usbmuxd
 	{
@@ -303,7 +298,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			try {
 				descriptions = LoadDescriptions(path);
 			} catch (Exception e) {
-				LoggingService.LogWarning("Failed to load: " + path, e);
+				Log.Warning("Failed to load: " + path, e);
 				descriptions = new iOSDeviceDescription[0];
 			}
 		}
@@ -317,7 +312,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 					Usbmuxd.StartUsbmuxdListenThread();
 				return true;
 			} catch (Exception e) {
-				LoggingService.LogWarning("Error while initializing usbmuxd", e);
+				Log.Warning("Error while initializing usbmuxd", e);
 				return false;
 			}
 		}
@@ -352,7 +347,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 
-		public static void GetUSBDevices(ConnectorRegistry connectors, List<ProcessInfo> processes)
+		public static void GetUSBDevices(ConnectorRegistry connectors, List<UnityProcessInfo> processes)
 		{
 			if (!Initialized)
 				return;
@@ -365,12 +360,12 @@ namespace MonoDevelop.Debugger.Soft.Unity
 						var name = GetNameForDevice(device);
 						var processId = connectors.GetProcessIdForUniqueId(device.udid);
 
-						processes.Add(new ProcessInfo(processId, "Unity iOS USB: " + name));
+						processes.Add(new UnityProcessInfo(processId, "Unity iOS USB: " + name));
 						connectors.Connectors[processId] = new iOSUsbConnector(device.udid);
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError("Error while getting USB devices", e);
+				Log.Error("Error while getting USB devices", e);
 			}
 		}
 

@@ -43,7 +43,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	{
 		internal static string EditLayout = "Solution";
 		private DebuggerEngine unityDebuggerEngine = null;
-		bool processesPolled = false;
 		UnityExecutionCommand executionCommand = new UnityExecutionCommand();
 
 		DebuggerEngine UnityDebuggerEngine
@@ -89,17 +88,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		/// </summary>
 		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			// HACK: Poll for attachable processes so the players processes are available when trying to attach for the first time.
-			if (!processesPolled) {
-				DispatchService.ThreadDispatch (delegate {					
-					// Hack: Poll twice, this increases the chances of iOS USB being ready
-					UnityDebuggerEngine.GetAttachableProcesses ();
-					System.Threading.Thread.Sleep(250);
-					UnityDebuggerEngine.GetAttachableProcesses ();
-				});
-				processesPolled = true;
-			}
-
 			if (context.ExecutionHandler != null)
 				context.ExecutionHandler.CanExecute (executionCommand);
 
