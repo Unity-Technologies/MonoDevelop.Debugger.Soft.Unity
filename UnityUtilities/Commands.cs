@@ -44,7 +44,7 @@ namespace Unity.Utilities
 	{
 		string apiBase;
 		
-		static string onlineApiBase = "http://unity3d.com/support/documentation/ScriptReference";
+		static string onlineApiBase = "http://docs.unity3d.com/ScriptReference";
 		static string classReferencePage = "20_class_hierarchy.html";
 		static string searchPage = "30_search.html";
 		
