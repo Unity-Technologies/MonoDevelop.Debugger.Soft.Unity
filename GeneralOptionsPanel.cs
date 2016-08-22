@@ -32,6 +32,7 @@ using System.IO;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -94,7 +95,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 	{
 		private GeneralOptionsPanel panel;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			panel = new GeneralOptionsPanel ();
 			return panel;

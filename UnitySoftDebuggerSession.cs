@@ -31,6 +31,7 @@ using System;
 using Mono.Debugging.Soft;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Client;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -49,9 +50,13 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
 		{
-			Ide.DispatchService.GuiDispatch (() =>
+			Runtime.RunInMainThread(() =>
 				Ide.IdeApp.Workbench.CurrentLayout = "Debug"
 			);
+			
+			//Ide.DispatchService.GuiDispatch (() =>
+			//	Ide.IdeApp.Workbench.CurrentLayout = "Debug"
+			//);
 			return base.GetConnectingMessage (dsi);
 		}
 		
@@ -81,9 +86,9 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		protected override void OnDetach()
 		{
 			try {
-				Ide.DispatchService.GuiDispatch(() =>
-					Ide.IdeApp.Workbench.CurrentLayout = UnityProjectServiceExtension.EditLayout
-				);
+				//Runtime.RunInMainThread(() =>
+				//	Ide.IdeApp.Workbench.CurrentLayout = UnityProjectServiceExtension.EditLayout
+				//);
 
 				VirtualMachine.Detach();
 				base.EndSession();
