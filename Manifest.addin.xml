@@ -21,9 +21,9 @@
 			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching"
 			type="MonoDevelop.Debugger.Soft.Unity.UnitySoftDebuggerEngine" />
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.Debugger.Soft.Unity.UnityProjectServiceExtension" id="UnityProjectServiceExtension" insertafter="FinalStep"/>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class = "MonoDevelop.Debugger.Soft.Unity.UnityProjectServiceExtension" insertafter="FinalStep"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">

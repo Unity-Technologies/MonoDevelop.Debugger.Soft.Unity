@@ -36,200 +36,196 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
-	///// <summary>
-	///// ProjectServiceExtension to allow Unity projects to be executed under the soft debugger
-	///// </summary>
-	//public class UnityProjectServiceExtension: ProjectServiceExtension
-	//{
-	//	internal static string EditLayout = "Solution";
-	//	private DebuggerEngine unityDebuggerEngine = null;
-	//	UnityExecutionCommand executionCommand = new UnityExecutionCommand();
+	/// <summary>
+	/// ProjectServiceExtension to allow Unity projects to be executed under the soft debugger
+	/// </summary>
+	public class UnityProjectServiceExtension : DotNetProjectExtension
+	{
+		internal static string EditLayout = "Solution";
+		private DebuggerEngine unityDebuggerEngine = null;
+		UnityExecutionCommand executionCommand = new UnityExecutionCommand();
+		DebuggerEngine UnityDebuggerEngine
+		{
+			get 
+			{
+				if (unityDebuggerEngine == null)
+					unityDebuggerEngine = DebuggingService.GetDebuggerEngines ().FirstOrDefault (e => e.Id == "MonoDevelop.Debugger.Soft.Unity");
 
-	//	DebuggerEngine UnityDebuggerEngine
-	//	{
-	//		get 
-	//		{
-	//			if (unityDebuggerEngine == null)
-	//				unityDebuggerEngine = DebuggingService.GetDebuggerEngines ().FirstOrDefault (e => e.Id == "MonoDevelop.Debugger.Soft.Unity");
+				return unityDebuggerEngine;
+			}
+		}
 
-	//			return unityDebuggerEngine;
-	//		}
-	//	}
+		public UnityProjectServiceExtension()
+		{
+			MonoDevelop.Ide.IdeApp.FocusIn += delegate {
+				if(UnityDebuggerEngine != null)
+					UnityDebuggerEngine.GetAttachableProcesses();
+			};
+		}
 
-	//	public UnityProjectServiceExtension()
-	//	{
-	//		MonoDevelop.Ide.IdeApp.FocusIn += delegate {
-	//			if(UnityDebuggerEngine != null)
-	//				UnityDebuggerEngine.GetAttachableProcesses();
-	//		};
-	//	}
-
-	//	/// <summary>
-	//	/// Detects whether any of the given projects reference UnityEngine
-	//	/// </summary>
-	//	private static bool ReferencesUnity (IEnumerable<Project> projects)
-	//	{
-	//		return null != projects.FirstOrDefault (project => 
-	//			(project is DotNetProject) && 
-	//			null != ((DotNetProject)project).References.FirstOrDefault (reference =>
-	//			       reference.Reference.Contains ("UnityEngine")
-	//			)
-	//		);
-	//	}
+		/// <summary>
+		/// Detects whether any of the given projects reference UnityEngine
+		/// </summary>
+		private static bool ReferencesUnity (IEnumerable<Project> projects)
+		{
+			return null != projects.FirstOrDefault (project => 
+				(project is DotNetProject) && 
+				null != ((DotNetProject)project).References.FirstOrDefault (reference =>
+				       reference.Reference.Contains ("UnityEngine")
+				)
+			);
+		}
 		
-	//	#region ProjectServiceExtension overrides
+		bool CanExecuteProject (Project project) {
+			return null != project &&  ReferencesUnity (new Project[]{ project });
+		}
+
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			if (context.ExecutionHandler != null)
+				context.ExecutionHandler.CanExecute (executionCommand);
+
+			if (CanExecuteProject (Item as Project))
+				return true;
+
+			return base.OnGetCanExecute (context, configuration);
+		}
+
+		private void ShowAttachToProcessDialog()
+		{
+			Runtime.RunInMainThread (delegate {
+				var dlg = new AttachToProcessDialog ();
+				try {
+					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
+						IdeApp.ProjectOperations.AttachToProcess (dlg.SelectedDebugger, dlg.SelectedProcess);
+				}
+				finally {
+					dlg.Destroy ();
+				}
+			});
+		}
 		
-	//	private bool CanExecuteProject (Project project) {
-	//		return null != project &&  ReferencesUnity (new Project[]{ project });
-	//	}
-		
-	//	/// <summary>
-	//	/// Flags Unity projects for debugging with this addin
-	//	/// </summary>
-	//	protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
-	//	{
-	//		if (context.ExecutionHandler != null)
-	//			context.ExecutionHandler.CanExecute (executionCommand);
+		/// <summary>
+		/// Launch Unity project
+		/// </summary>
+		protected override System.Threading.Tasks.Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			var project = Item as Project;
+			var targets = Item.GetExecutionTargets (configuration);
 
-	//		if (CanExecuteProject (item as Project))
-	//			return true;
+			if (!CanExecuteProject (project) || targets == null || targets.Count() < 1) 
+			{
+				return base.OnExecute (monitor, context, configuration);
+			}
 
-	//		return base.CanExecute (item, context, configuration);
-	//	}
+			var target = targets.First() as UnityExecutionTarget;
 
-	//	private void ShowAttachToProcessDialog()
-	//	{
-	//		DispatchService.GuiDispatch (delegate {
-	//			var dlg = new AttachToProcessDialog ();
-	//			try {
-	//				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
-	//					IdeApp.ProjectOperations.AttachToProcess (dlg.SelectedDebugger, dlg.SelectedProcess);
-	//			}
-	//			finally {
-	//				dlg.Destroy ();
-	//			}
-	//		});
-	//	}
-		
-	//	/// <summary>
-	//	/// Launch Unity project
-	//	/// </summary>
-	//	public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
-	//	{
-	//		var project = item as Project;
-	//		var target = context.ExecutionTarget as UnityExecutionTarget;
+			if (target == null)
+				return base.OnExecute (monitor, context, configuration);
 
-	//		if (!CanExecuteProject (project) || target == null) 
-	//		{
-	//			base.Execute (monitor, item, context, configuration);
-	//			return;
-	//		}
-			
-	//		if (target.Id.StartsWith("Unity.Instance")) 
-	//		{
-	//			var processes = UnityDebuggerEngine.GetAttachableProcesses ();
-	//			var unityEngineProcesses = processes.Where (p => p.Name.Contains (target.ProcessName)).ToArray ();
+			if (target.Id.StartsWith("Unity.Instance")) 
+			{
+				var processes = UnityDebuggerEngine.GetAttachableProcesses ();
+				var unityEngineProcesses = processes.Where (p => p.Name.Contains (target.ProcessName)).ToArray ();
 
-	//			if (unityEngineProcesses.Length == 0) 
-	//			{
-	//				MessageService.ShowError (target.Name + " not found");
-	//				LoggingService.LogError (target.Name + " not found");
-	//			} 
-	//			else if (unityEngineProcesses.Length == 1) 
-	//			{
-	//				DispatchService.GuiDispatch (delegate {
-	//					IdeApp.ProjectOperations.AttachToProcess (unityDebuggerEngine, unityEngineProcesses [0]); 
-	//				});
-	//			} 
-	//			else 
-	//			{
-	//				ShowAttachToProcessDialog ();
-	//			}
+				if (unityEngineProcesses.Length == 0) 
+				{
+					MessageService.ShowError (target.Name + " not found");
+					LoggingService.LogError (target.Name + " not found");
+				} 
+				else if (unityEngineProcesses.Length == 1) 
+				{
+					return IdeApp.ProjectOperations.AttachToProcess (unityDebuggerEngine, unityEngineProcesses [0]).Task;
+				} 
+				else 
+				{
+					ShowAttachToProcessDialog ();
+					return null;
+				}
 
-	//		} 
-	//		else if (target.Id == "Unity.AttachToProcess") 
-	//		{
-	//			ShowAttachToProcessDialog ();
-	//		} 
-	//		else
-	//		{
-	//			MessageService.ShowError ("UnityProjectServiceExtension: Unsupported target.Id: " + target.Id);
-	//			MonoDevelop.Core.LoggingService.LogError ("UnityProjectServiceExtension: Unsupported target.Id: " + target.Id);
-	//			base.Execute (monitor, item, context, configuration);
-	//		}
-	//	}
+				return base.OnExecute (monitor, context, configuration);
+			} 
+			else if (target.Id == "Unity.AttachToProcess") 
+			{
+				ShowAttachToProcessDialog ();
+				return null;
+			} 
+			else
+			{
+				MessageService.ShowError ("UnityProjectServiceExtension: Unsupported target.Id: " + target.Id);
+				MonoDevelop.Core.LoggingService.LogError ("UnityProjectServiceExtension: Unsupported target.Id: " + target.Id);
+				return base.OnExecute (monitor, context, configuration);
+			}
+		}
 
-	//	class UnityExecutionTarget : ExecutionTarget
-	//	{
-	//		string name;
-	//		string id;
-	//		string processName;
+		class UnityExecutionTarget : ExecutionTarget
+		{
+			string name;
+			string id;
+			string processName;
 
-	//		public UnityExecutionTarget(string name, string id, string processName)
-	//		{
-	//			this.name = name;
-	//			this.id = id + (processName == null ? "" : "." + processName);
-	//			this.processName = processName;
-	//		}
+			public UnityExecutionTarget(string name, string id, string processName)
+			{
+				this.name = name;
+				this.id = id + (processName == null ? "" : "." + processName);
+				this.processName = processName;
+			}
 
-	//		public override string Name { get { return name; } }
-	//		public override string Id { get { return id; } }
-	//		public string ProcessName { get { return processName; } }
-	//	}
+			public override string Name { get { return name; } }
+			public override string Id { get { return id; } }
+			public string ProcessName { get { return processName; } }
+		}
 
-	//	protected override IEnumerable<ExecutionTarget> GetExecutionTargets (SolutionEntityItem item, ConfigurationSelector configuration)
-	//	{
-	//		var list = new List<ExecutionTarget> ();
+		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		{
+			var list = new List<ExecutionTarget> ();
 
-	//		if (CanExecuteProject (item as Project)) 
-	//		{
-	//			list.Add (new UnityExecutionTarget ("Unity Editor", "Unity.Instance", "Unity Editor"));
+			if (CanExecuteProject (Item as Project)) 
+			{
+				list.Add (new UnityExecutionTarget ("Unity Editor", "Unity.Instance", "Unity Editor"));
 
-	//			if (Platform.IsMac) 
-	//			{
-	//				list.Add (new UnityExecutionTarget ("OSX Player", "Unity.Instance", "OSXPlayer"));
-	//				list.Add (new UnityExecutionTarget ("OSX WebPlayer", "Unity.Instance", "OSXWebPlayer"));
-	//			}
+				if (Platform.IsMac) 
+				{
+					list.Add (new UnityExecutionTarget ("OSX Player", "Unity.Instance", "OSXPlayer"));
+					list.Add (new UnityExecutionTarget ("OSX WebPlayer", "Unity.Instance", "OSXWebPlayer"));
+				}
 
-	//			if (Platform.IsWindows) 
-	//			{
-	//				list.Add (new UnityExecutionTarget ("Windows Player", "Unity.Instance", "WindowsPlayer"));
-	//				list.Add (new UnityExecutionTarget ("Windows WebPlayer", "Unity.Instance", "WindowsWebPlayer"));
-	//			}
+				if (Platform.IsWindows) 
+				{
+					list.Add (new UnityExecutionTarget ("Windows Player", "Unity.Instance", "WindowsPlayer"));
+					list.Add (new UnityExecutionTarget ("Windows WebPlayer", "Unity.Instance", "WindowsWebPlayer"));
+				}
 
-	//			if (Platform.IsLinux) 
-	//			{
-	//				list.Add (new UnityExecutionTarget ("Linux Player", "Unity.Instance", "LinuxPlayer"));
-	//				list.Add (new UnityExecutionTarget ("Linux WebPlayer", "Unity.Instance", "LinuxWebPlayer"));
-	//			}
+				if (Platform.IsLinux) 
+				{
+					list.Add (new UnityExecutionTarget ("Linux Player", "Unity.Instance", "LinuxPlayer"));
+					list.Add (new UnityExecutionTarget ("Linux WebPlayer", "Unity.Instance", "LinuxWebPlayer"));
+				}
 
-	//			list.Add (new UnityExecutionTarget ("iOS Player", "Unity.Instance", "iPhonePlayer"));
+				list.Add (new UnityExecutionTarget ("iOS Player", "Unity.Instance", "iPhonePlayer"));
 
-	//			try
-	//			{
-	//				if(iOSDevices.Supported && iOSDevices.Initialized)
-	//					list.Add (new UnityExecutionTarget ("iOS Player (USB)", "Unity.Instance", "Unity iOS USB"));
-	//			}
-	//			catch {}
+				try
+				{
+					if(iOSDevices.Supported && iOSDevices.Initialized)
+						list.Add (new UnityExecutionTarget ("iOS Player (USB)", "Unity.Instance", "Unity iOS USB"));
+				}
+				catch {}
 
-	//			list.Add (new UnityExecutionTarget ("Android Player", "Unity.Instance", "AndroidPlayer"));
+				list.Add (new UnityExecutionTarget ("Android Player", "Unity.Instance", "AndroidPlayer"));
 
-	//			list.Add (new UnityExecutionTarget ("Attach To Process", "Unity.AttachToProcess", null));
+				list.Add (new UnityExecutionTarget ("Attach To Process", "Unity.AttachToProcess", null));
 
-	//		}
-	//		return list;
-	//	}
-		
-	//	public override bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
-	//	{
-	//		if (item is WorkspaceItem){ return GetNeedsBuilding ((WorkspaceItem)item, configuration); }
-	//		if (item is Project && ReferencesUnity (new Project[]{ (Project)item }) && !Util.UnityBuild) {
-	//			return false;
-	//		}
-	//		return base.GetNeedsBuilding (item, configuration);
-	//	}
-		
-	//	#endregion
-	//}
+			}
+			return list;
+		}
+
+		protected override bool OnNeedsBuilding (ConfigurationSelector configuration)
+		{
+			if (Item is Project && ReferencesUnity (new Project[]{ (Project)Item }) && !Util.UnityBuild)
+				return false;
+
+			return base.OnNeedsBuilding (configuration);
+		}
+	}
 }
 
