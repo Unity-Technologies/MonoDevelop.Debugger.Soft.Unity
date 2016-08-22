@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Debugger;
 using MonoDevelop.Core.Execution;
 using Mono.Debugging.Client;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -57,9 +58,40 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 
+		class MDLogger : ICustomLogger
+		{
+			public string GetNewDebuggerLogFilename ()
+			{
+				if (PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false)) {
+					string filename;
+					var logWriter = LoggingService.CreateLogFile ("Debugger", out filename);
+					logWriter.Dispose ();
+					return filename;
+				} else {
+					return null;
+				}
+			}
+
+			public void LogError (string message, Exception ex)
+			{
+				LoggingService.LogError (message, ex);
+			}
+
+			public void LogAndShowException (string message, Exception ex)
+			{
+				MonoDevelop.Ide.MessageService.ShowError (message, ex);
+			}
+
+			public void LogMessage (string messageFormat, params object[] args)
+			{
+				LoggingService.LogInfo (messageFormat, args);
+			}
+		}
+
 		public UnitySoftDebuggerEngine()
 		{
 			Log.AddLogger (new DebuggerLogger ());
+			DebuggerLoggingService.CustomLogger = new MDLogger ();
 		}
 
 		public override bool CanDebugCommand (ExecutionCommand cmd)
