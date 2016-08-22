@@ -16,7 +16,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\bin\Debug</OutputPath>
+    <OutputPath>..\..\monodevelop\main\build\AddIns\MonoDevelop.Debugger.Soft.Unity</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
