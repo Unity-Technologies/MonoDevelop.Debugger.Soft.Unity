@@ -4,3 +4,7 @@ UnityUtilities/obj/*
 
 MonoDevelop.Ide.Unity/bin
 MonoDevelop.Ide.Unity/obj
+MonoDevelop.Ide.Unity/build
+UnityUtilities/build
+build-mpacks
+build
