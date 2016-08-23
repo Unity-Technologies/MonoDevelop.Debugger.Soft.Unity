@@ -104,24 +104,22 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				}
 			});
 		}
-		
-		/// <summary>
-		/// Launch Unity project
-		/// </summary>
-		protected override System.Threading.Tasks.Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+
+		protected override System.Threading.Tasks.Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			return base.OnExecuteCommand (monitor, context, configuration, executionCommand);
+		}
+	
+		protected override async System.Threading.Tasks.Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			var project = Item as Project;
-			var targets = Item.GetExecutionTargets (configuration);
+			var target = context.ExecutionTarget as UnityExecutionTarget;
 
-			if (!CanExecuteProject (project) || targets == null || targets.Count() < 1) 
+			if (!CanExecuteProject (project) || target == null) 
 			{
-				return base.OnExecute (monitor, context, configuration);
+				await base.OnExecute (monitor, context, configuration);
+				return;
 			}
-
-			var target = targets.First() as UnityExecutionTarget;
-
-			if (target == null)
-				return base.OnExecute (monitor, context, configuration);
 
 			if (target.Id.StartsWith("Unity.Instance")) 
 			{
@@ -135,26 +133,25 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				} 
 				else if (unityEngineProcesses.Length == 1) 
 				{
-					return IdeApp.ProjectOperations.AttachToProcess (unityDebuggerEngine, unityEngineProcesses [0]).Task;
+					var attachToProcessAsync = DebuggingService.AttachToProcess (unityDebuggerEngine, unityEngineProcesses [0]);
+
+					using (var stopper = monitor.CancellationToken.Register (attachToProcessAsync.Cancel))
+						await attachToProcessAsync.Task;
 				} 
 				else 
 				{
 					ShowAttachToProcessDialog ();
-					return null;
 				}
-
-				return base.OnExecute (monitor, context, configuration);
 			} 
 			else if (target.Id == "Unity.AttachToProcess") 
 			{
 				ShowAttachToProcessDialog ();
-				return null;
 			} 
 			else
 			{
 				MessageService.ShowError ("UnityProjectServiceExtension: Unsupported target.Id: " + target.Id);
 				MonoDevelop.Core.LoggingService.LogError ("UnityProjectServiceExtension: Unsupported target.Id: " + target.Id);
-				return base.OnExecute (monitor, context, configuration);
+				await base.OnExecute (monitor, context, configuration);
 			}
 		}
 
