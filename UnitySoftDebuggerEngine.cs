@@ -29,10 +29,11 @@
 
 using System;
 using System.Linq;
-using MonoDevelop.Debugger;
-using MonoDevelop.Core.Execution;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Debugger;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 			public void Warning (string message, Exception e)
 			{
-				throw new System.NotImplementedException ();
+				DebuggerLoggingService.LogMessage ("Warning: " + message + "\n" + e);
 			}
 
 			public void Error (string message, Exception e)
@@ -62,14 +63,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		{
 			public string GetNewDebuggerLogFilename ()
 			{
-				if (PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.DebuggerLogging", false)) {
-					string filename;
-					var logWriter = LoggingService.CreateLogFile ("Debugger", out filename);
-					logWriter.Dispose ();
-					return filename;
-				} else {
-					return null;
-				}
+				string filename;
+				var logWriter = LoggingService.CreateLogFile ("Unity-Debugger", out filename);
+				logWriter.Dispose ();
+				return filename;
 			}
 
 			public void LogError (string message, Exception ex)
@@ -79,7 +76,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 			public void LogAndShowException (string message, Exception ex)
 			{
-				MonoDevelop.Ide.MessageService.ShowError (message, ex);
+				MessageService.ShowError (message, ex);
 			}
 
 			public void LogMessage (string messageFormat, params object[] args)
@@ -92,6 +89,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		{
 			Log.AddLogger (new DebuggerLogger ());
 			DebuggerLoggingService.CustomLogger = new MDLogger ();
+			UnityProcessDiscovery.Init ();
 		}
 
 		public override bool CanDebugCommand (ExecutionCommand cmd)
