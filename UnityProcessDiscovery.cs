@@ -58,6 +58,11 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			}
 		}
 
+		public static void Init()
+		{
+			GetAttachableProcessesAsync ();
+		}
+
 		public static void Stop()
 		{
 			run = false;
