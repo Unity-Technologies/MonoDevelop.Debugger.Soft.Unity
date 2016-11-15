@@ -7,6 +7,6 @@ mkdir build-mpacks
 
 cd build-mpacks
 
-mono "/Applications/Xamarin Studio 6.app/Contents/Resources/lib/monodevelop/bin/mdtool.exe" setup pack ../build/MonoDevelop.Debugger.Soft.Unity.dll ../UnityUtilities/build/UnityUtilities.dll
+mono "/Applications/Xamarin Studio 6.1.2.app/Contents/Resources/lib/monodevelop/bin/mdtool.exe" setup pack ../build/MonoDevelop.Debugger.Soft.Unity.dll ../UnityUtilities/build/UnityUtilities.dll
 
 cd ..
