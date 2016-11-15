@@ -57,10 +57,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 		public UnityProjectServiceExtension()
 		{
-			IdeApp.FocusIn += delegate
+			try
 			{
-				UnityProcessDiscovery.GetAttachableProcessesAsync();
-			};
+				IdeApp.FocusIn += delegate
+				{
+					UnityProcessDiscovery.GetAttachableProcessesAsync();
+				};
+			}
+			catch { }
 		}
 
 		/// <summary>
