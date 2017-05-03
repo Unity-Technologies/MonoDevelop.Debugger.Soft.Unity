@@ -44,7 +44,7 @@ namespace Unity.Utilities
 	{
 		string apiBase;
 		
-		static string onlineApiBase = "http://unity3d.com/support/documentation/ScriptReference";
+		static string onlineApiBase = "http://docs.unity3d.com/ScriptReference";
 		static string classReferencePage = "20_class_hierarchy.html";
 		static string searchPage = "30_search.html";
 		
@@ -115,8 +115,8 @@ namespace Unity.Utilities
 				// Selected Text?
 				if (doc.Editor.IsSomethingSelected) return doc.Editor.SelectedText.Trim();
 				
-				int column = Math.Max (1,doc.Editor.CaretLocation.Column-1);
-				string lineText = doc.Editor.GetLineText (doc.Editor.CaretLocation.Line);
+				int column = Math.Max (1,doc.Editor.Caret.Column-1);
+				string lineText = doc.Editor.GetLineText (doc.Editor.Caret.Line);
 				
 				if (3 < lineText.Length) {
 					int start = lineText.LastIndexOfAny (tokenBreakers, column-1);
