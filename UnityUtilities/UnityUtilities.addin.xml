@@ -5,7 +5,7 @@
        description = "Utilities for use with Unity"
        copyright   = "MIT X11"
        category = "Unity"
-       version   = "6.1">
+       version   = "6.3">
 
 	<Dependencies>
 		<Addin id="MonoDevelop.Ide" version="6.1"/>
