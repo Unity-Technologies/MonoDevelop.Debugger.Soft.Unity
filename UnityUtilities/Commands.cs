@@ -115,8 +115,8 @@ namespace Unity.Utilities
 				// Selected Text?
 				if (doc.Editor.IsSomethingSelected) return doc.Editor.SelectedText.Trim();
 				
-				int column = Math.Max (1,doc.Editor.Caret.Column-1);
-				string lineText = doc.Editor.GetLineText (doc.Editor.Caret.Line);
+				int column = Math.Max (1,doc.Editor.CaretColumn-1);
+				string lineText = doc.Editor.GetLineText (doc.Editor.CaretLine);
 				
 				if (3 < lineText.Length) {
 					int start = lineText.LastIndexOfAny (tokenBreakers, column-1);
