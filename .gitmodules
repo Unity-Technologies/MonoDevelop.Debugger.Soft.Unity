@@ -1,0 +1,3 @@
+[submodule "debugger-libs"]
+	path = debugger-libs
+	url = https://github.com/Unity-Technologies/debugger-libs
