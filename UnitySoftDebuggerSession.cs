@@ -80,7 +80,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 		protected override void OnExit ()
 		{
 			Detach ();
-			base.OnExit ();
 		}
 
 		protected override void OnDetach()
