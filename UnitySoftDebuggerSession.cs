@@ -59,6 +59,14 @@ namespace MonoDevelop.Debugger.Soft.Unity
 			//);
 			return base.GetConnectingMessage (dsi);
 		}
+
+		protected override bool HandleException(Exception ex)
+		{
+			if (ex is VMNotSuspendedException)
+				return true;
+
+			return  base.HandleException(ex);
+		}
 		
 		protected override void OnAttachToProcess (long processId)
 		{
