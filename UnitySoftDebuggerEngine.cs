@@ -157,7 +157,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
 									p.ProcessName.Contains ("Unity.app")) &&
 									!p.ProcessName.Contains ("UnityShader") &&
 									!p.ProcessName.Contains ("UnityHelper") &&
-									!p.ProcessName.Contains ("Unity Helper")) {
+									!p.ProcessName.Contains ("Unity Helper") &&
+									!p.ProcessName.Contains ("Unity Hub")) {
 									unityThreadProcesses.Add (new ProcessInfo (p.Id, string.Format ("{0} ({1})", "Unity Editor", p.ProcessName)));
 								}
 							} catch {
