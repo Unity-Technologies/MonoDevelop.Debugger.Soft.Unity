@@ -142,29 +142,30 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
 		public static List<UnityProcessInfo> GetUnityEditorProcesses()
 		{
-			StringComparison comparison = StringComparison.OrdinalIgnoreCase;
+            var unityEditorProcessNames = new string[] { "Unity", "Unity Editor" };
 
 			Process[] systemProcesses = Process.GetProcesses();
 			var unityEditorProcesses = new List<UnityProcessInfo>();
 
-			if (systemProcesses != null) {
-				foreach (Process p in systemProcesses) {
-					try {
-						if (((p.ProcessName.StartsWith ("unity", comparison) && !p.ProcessName.StartsWith ("unity-", comparison)) ||
-							p.ProcessName.Contains ("Unity.app")) &&
-							!p.ProcessName.Contains ("unityiproxy") &&
-							!p.ProcessName.Contains ("UnityDebug") &&
-							!p.ProcessName.Contains ("UnityShader") &&
-							!p.ProcessName.Contains ("UnityHelper") &&
-							!p.ProcessName.Contains ("Unity Helper") &&
-							!p.ProcessName.Contains ("UnityCrashHandler"))
-                        {
-							unityEditorProcesses.Add (new UnityProcessInfo (p.Id, string.Format ("{0} ({1})", "Unity Editor", p.ProcessName)));
-						}
-					} catch {
-						// Don't care; continue
-					}
-				}
+            if (systemProcesses == null)
+                return unityEditorProcesses;
+            
+	        foreach (Process p in systemProcesses) 
+            {
+                try
+                {
+                    var processName = p.ProcessName;
+
+                    foreach (var unityEditorProcessName in unityEditorProcessNames)
+                    {
+                        if (processName.Equals(unityEditorProcessName, StringComparison.OrdinalIgnoreCase))
+                            unityEditorProcesses.Add(new UnityProcessInfo(p.Id, string.Format("Unity Editor ({0})", processName)));
+                    }
+                }
+                catch
+                {
+                    // Don't care; continue
+                }
 			}
 
 			return unityEditorProcesses;
