@@ -56,6 +56,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
             }
             catch (Exception e)
             {
+                UnityDebug.Log.Write("Error launching player connection discovery service: Unity player discovery will be unavailable");
+                UnityDebug.Log.Write(e.Message);
                 Log.Error("Error launching player connection discovery service: Unity player discovery will be unavailable", e);
             }
         }
@@ -152,7 +154,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
         public static List<UnityProcessInfo> GetUnityEditorProcesses()
         {
-            var unityEditorProcessNames = new string[] { "Unity", "Unity Editor" };
+            var unityEditorProcessNames = new[] { "Unity", "Unity Editor" };
 
             Process[] systemProcesses = Process.GetProcesses();
             var unityEditorProcesses = new List<UnityProcessInfo>();
@@ -169,7 +171,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     foreach (var unityEditorProcessName in unityEditorProcessNames)
                     {
                         if (processName.Equals(unityEditorProcessName, StringComparison.OrdinalIgnoreCase))
-                            unityEditorProcesses.Add(new UnityProcessInfo(p.Id, string.Format("Unity Editor ({0})", processName)));
+                        {
+                            unityEditorProcesses.Add(new UnityProcessInfo(p.Id, $"Unity Editor ({processName})"));
+                            UnityDebug.Log.Write($"Unity Editor process: {unityEditorProcessName} on id: {p.Id}");
+                        }
                     }
                 }
                 catch
@@ -186,45 +191,58 @@ namespace MonoDevelop.Debugger.Soft.Unity
             int index = 1;
             List<UnityProcessInfo> processes = new List<UnityProcessInfo>();
 
-            if (null != unityPlayerConnection)
+            if (null == unityPlayerConnection)
             {
-                if (block)
-                {
-                    Monitor.Enter(unityPlayerConnection);
+                return processes;
+            }
 
-                    for (int i = 0; i < 12 && !unityPlayerConnection.AvailablePlayers.Any(); ++i)
+            UnityDebug.Log.Write("UnityPlayerConnection is constructed");
+            if (block)
+            {
+                Monitor.Enter(unityPlayerConnection);
+
+                UnityDebug.Log.Write("Known size of available Players: " + unityPlayerConnection.AvailablePlayers.Count());
+                for (int i = 0; i < 12 && !unityPlayerConnection.AvailablePlayers.Any(); ++i)
+                {
+                    unityPlayerConnection.Poll();
+                    Thread.Sleep(250);
+                }
+            }
+            else if (!Monitor.TryEnter(unityPlayerConnection))
+            {
+                return processes;
+            }
+
+            UnityDebug.Log.Write("New size of available Players: " + unityPlayerConnection.AvailablePlayers.Count());
+            foreach (var availablePlayer in unityPlayerConnection.AvailablePlayers)
+            {
+                UnityDebug.Log.Write($"Available player: {availablePlayer}");
+            }
+
+            try
+            {
+                foreach (string player in unityPlayerConnection.AvailablePlayers)
+                {
+                    try
                     {
-                        unityPlayerConnection.Poll();
-                        Thread.Sleep(250);
+                        PlayerConnection.PlayerInfo info = PlayerConnection.PlayerInfo.Parse(player);
+                        if (info.m_AllowDebugging)
+                        {
+                            UnityPlayers[info.m_Guid] = info;
+                            processes.Add(new UnityProcessInfo(info.m_Guid, info.m_Id));
+                            ++index;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        UnityDebug.Log.Write($"{player}: could not be parsed: {e.Message}");
+                        // Don't care; continue
                     }
                 }
-                else if (!Monitor.TryEnter(unityPlayerConnection))
-                    return processes;
-
-                try
-                {
-                    foreach (string player in unityPlayerConnection.AvailablePlayers)
-                    {
-                        try
-                        {
-                            PlayerConnection.PlayerInfo info = PlayerConnection.PlayerInfo.Parse(player);
-                            if (info.m_AllowDebugging)
-                            {
-                                UnityPlayers[info.m_Guid] = info;
-                                processes.Add(new UnityProcessInfo(info.m_Guid, info.m_Id));
-                                ++index;
-                            }
-                        }
-                        catch
-                        {
-                            // Don't care; continue
-                        }
-                    }
-                }
-                finally
-                {
-                    Monitor.Exit(unityPlayerConnection);
-                }
+            }
+            finally
+            {
+                Monitor.Exit(unityPlayerConnection);
             }
 
             return processes;

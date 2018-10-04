@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Sockets;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -51,7 +52,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
         public IEnumerable<string> AvailablePlayers
         {
-            get { return m_AvailablePlayers.Where(p => (0 < p.Value)).Select(p => p.Key); }
+            get { return m_AvailablePlayers.Where(p => 0 < p.Value).Select(p => p.Key); }
         }
 
         public struct PlayerInfo
@@ -144,6 +145,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     var ip = IPAddress.Parse(PLAYER_MULTICAST_GROUP);
                     multicastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
                         new MulticastOption(ip, p.Index));
+                    UnityDebug.Log.Write($"Setting up multicast option: {ip}: {port}");
                     m_MulticastSockets.Add(multicastSocket);
                 }
             }
