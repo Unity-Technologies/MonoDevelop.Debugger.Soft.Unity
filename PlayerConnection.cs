@@ -71,45 +71,77 @@ namespace MonoDevelop.Debugger.Soft.Unity
 				return string.Format ("PlayerInfo {0} {1} {2} {3} {4} {5} {6}:{7} {8}", m_IPEndPoint.Address, m_IPEndPoint.Port,
 									  m_Flags, m_Guid, m_EditorGuid, m_Version, m_Id, m_DebuggerPort, m_AllowDebugging? 1: 0);
 			}
-			
-			public static PlayerInfo Parse(string playerString)
-			{
-				PlayerInfo res = new PlayerInfo();
-				
-				try {
-					// "[IP] %s [Port] %u [Flags] %u [Guid] %u [EditorId] %u [Version] %d [Id] %s(:d) [Debug] %d"
-					Regex r = new Regex("\\[IP\\] (?<ip>.*) \\[Port\\] (?<port>.*) \\[Flags\\] (?<flags>.*)" +
-										" \\[Guid\\] (?<guid>.*) \\[EditorId\\] (?<editorid>.*) \\[Version\\] (?<version>.*)" +
-										" \\[Id\\] (?<id>[^:]+)(:(?<debuggerPort>\\d+))? \\[Debug\\] (?<debug>.*)");
-					
-					MatchCollection matches = r.Matches(playerString);
-					
-					if (matches.Count != 1)
-					{
-						throw new Exception(string.Format("Player string not recognised {0}", playerString));
+
+			public static Dictionary<string, string> ParsePlayerString(string playerString) {
+				// Remove trailing null character
+				playerString = playerString.TrimEnd('\0');
+
+				// Split string into parts inside [] brackets and after that
+				int partStart = 0;
+				int partLen = 0;
+				List<string> strings = new List<string>();
+				for (int i = 0; i < playerString.Length; i++) {
+					var c = playerString[i];
+					if (c == '[') {
+						partLen = i - partStart;
+						if (partLen > 0) {
+							strings.Add(playerString.Substring(partStart, partLen));
+						}
+						partStart = i + 1;
 					}
-					
-					string ip = matches[0].Groups["ip"].Value;
-					
-					res.m_IPEndPoint = new IPEndPoint(IPAddress.Parse(ip), UInt16.Parse (matches[0].Groups["port"].Value));
-					res.m_Flags = UInt32.Parse(matches[0].Groups["flags"].Value);
-					res.m_Guid = UInt32.Parse(matches[0].Groups["guid"].Value);
-					res.m_EditorGuid = UInt32.Parse(matches[0].Groups["guid"].Value);
-					res.m_Version = Int32.Parse (matches[0].Groups["version"].Value);
-					res.m_Id = matches[0].Groups["id"].Value;
-					res.m_AllowDebugging= (0 != int.Parse (matches[0].Groups["debug"].Value));
-					if (matches[0].Groups["debuggerPort"].Success)
-						res.m_DebuggerPort = UInt32.Parse (matches[0].Groups["debuggerPort"].Value);
-					
-					System.Console.WriteLine(res.ToString());
-				} catch (Exception e) {
-					throw new ArgumentException ("Unable to parse player string", e);
+					else if (c == ']') {
+						partLen = i - partStart;
+						if (partLen > 0) {
+							strings.Add(playerString.Substring(partStart, partLen));
+						}
+						partStart = i + 1;
+					}
 				}
-				
+
+				partLen = playerString.Length - partStart;
+				if (partLen > 0) {
+					strings.Add(playerString.Substring(partStart, partLen));
+				}
+
+				// Group key/value pairs
+				Dictionary<string, string> dict = new Dictionary<string, string>();
+				while (strings.Count >= 2) {
+					var key = strings[0].Trim().ToLower();
+					var value = strings[1].Trim();
+					strings.RemoveRange(0, 2);
+					dict[key] = value;
+				}
+
+				return dict;
+			}
+
+			public static PlayerInfo Parse(string playerString) {
+				var res = new PlayerInfo();
+
+				try {
+					var playerSettings = ParsePlayerString(playerString);
+
+					var ip = playerSettings["ip"];
+					res.m_IPEndPoint = new IPEndPoint(IPAddress.Parse(ip), UInt16.Parse(playerSettings["port"]));
+					res.m_Flags = uint.Parse(playerSettings["flags"]);
+					res.m_Guid = uint.Parse(playerSettings["guid"]);
+					res.m_EditorGuid = uint.Parse(playerSettings["guid"]);
+					res.m_Version = int.Parse(playerSettings["version"]);
+					res.m_Id = playerSettings["id"];
+					res.m_AllowDebugging = 0 != int.Parse(playerSettings["debug"]);
+					if (playerSettings.ContainsKey("debuggerport"))
+						res.m_DebuggerPort = uint.Parse(playerSettings["debuggerport"]);
+
+					Console.WriteLine(res.ToString());
+				}
+				catch (Exception e) {
+					throw new ArgumentException("Unable to parse player string", e);
+				}
+
 				return res;
 			}
 		}
-		
+
 		public PlayerConnection ()
 		{
 			m_MulticastSockets = new List<Socket> ();
