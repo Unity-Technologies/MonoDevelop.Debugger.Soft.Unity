@@ -72,39 +72,68 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     $" {m_Version} {m_Id}:{m_DebuggerPort} {(m_AllowDebugging ? 1 : 0)}";
             }
 
-            public static PlayerInfo Parse(string playerString)
-            {
-                var res = new PlayerInfo();
+			public static Dictionary<string, string> ParsePlayerString(string playerString) {
+				// Remove trailing null character
+				playerString = playerString.TrimEnd('\0');
 
-                try
-                {
-                    // "[IP] %s [Port] %u [Flags] %u [Guid] %u [EditorId] %u [Version] %d [Id] %s(:d) [Debug] %d [PackageName] %s"
-                    var r = new Regex("\\[IP\\] (?<ip>.*) \\[Port\\] (?<port>.*) \\[Flags\\] (?<flags>.*)" +
-                        " \\[Guid\\] (?<guid>.*) \\[EditorId\\] (?<editorid>.*) \\[Version\\] (?<version>.*)" +
-                        " \\[Id\\] (?<id>[^:]+)(:(?<debuggerPort>\\d+))? \\[Debug\\] (?<debug>.*)" +
-                        " \\[PackageName\\] (?<packageName>.*)");
+				// Split string into parts inside [] brackets and after that
+				int partStart = 0;
+				int partLen = 0;
+				List<string> strings = new List<string>();
+				for (int i = 0; i < playerString.Length; i++) {
+					var c = playerString[i];
+					if (c == '[') {
+						partLen = i - partStart;
+						if (partLen > 0) {
+							strings.Add(playerString.Substring(partStart, partLen));
+						}
+						partStart = i + 1;
+					}
+					else if (c == ']') {
+						partLen = i - partStart;
+						if (partLen > 0) {
+							strings.Add(playerString.Substring(partStart, partLen));
+						}
+						partStart = i + 1;
+					}
+				}
 
-                    var matches = r.Matches(playerString);
+				partLen = playerString.Length - partStart;
+				if (partLen > 0) {
+					strings.Add(playerString.Substring(partStart, partLen));
+				}
 
-                    if (matches.Count != 1)
-                    {
-                        throw new Exception($"Player string not recognised {playerString}");
-                    }
+				// Group key/value pairs
+				Dictionary<string, string> dict = new Dictionary<string, string>();
+				while (strings.Count >= 2) {
+					var key = strings[0].Trim().ToLower();
+					var value = strings[1].Trim();
+					strings.RemoveRange(0, 2);
+					dict[key] = value;
+				}
 
-                    var ip = matches[0].Groups["ip"].Value;
+				return dict;
+			}
 
-                    res.m_IPEndPoint = new IPEndPoint(IPAddress.Parse(ip), UInt16.Parse(matches[0].Groups["port"].Value));
-                    res.m_Flags = uint.Parse(matches[0].Groups["flags"].Value);
-                    res.m_Guid = uint.Parse(matches[0].Groups["guid"].Value);
-                    res.m_EditorGuid = uint.Parse(matches[0].Groups["guid"].Value);
-                    res.m_Version = int.Parse(matches[0].Groups["version"].Value);
-                    res.m_Id = matches[0].Groups["id"].Value;
-                    res.m_AllowDebugging = 0 != int.Parse(matches[0].Groups["debug"].Value);
-                    if (matches[0].Groups["debuggerPort"].Success)
-                        res.m_DebuggerPort = uint.Parse(matches[0].Groups["debuggerPort"].Value);
+			public static PlayerInfo Parse(string playerString) {
+				var res = new PlayerInfo();
 
-                    Console.WriteLine(res.ToString());
-                }
+				try {
+					var playerSettings = ParsePlayerString(playerString);
+
+					var ip = playerSettings["ip"];
+					res.m_IPEndPoint = new IPEndPoint(IPAddress.Parse(ip), UInt16.Parse(playerSettings["port"]));
+					res.m_Flags = uint.Parse(playerSettings["flags"]);
+					res.m_Guid = uint.Parse(playerSettings["guid"]);
+					res.m_EditorGuid = uint.Parse(playerSettings["guid"]);
+					res.m_Version = int.Parse(playerSettings["version"]);
+					res.m_Id = playerSettings["id"];
+					res.m_AllowDebugging = 0 != int.Parse(playerSettings["debug"]);
+					if (playerSettings.ContainsKey("debuggerport"))
+						res.m_DebuggerPort = uint.Parse(playerSettings["debuggerport"]);
+
+					Console.WriteLine(res.ToString());
+				}
                 catch (Exception e)
                 {
                     throw new ArgumentException("Unable to parse player string", e);
