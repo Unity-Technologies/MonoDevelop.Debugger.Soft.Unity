@@ -125,7 +125,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     res.m_IPEndPoint = new IPEndPoint(IPAddress.Parse(ip), UInt16.Parse(playerSettings["port"]));
                     res.m_Flags = uint.Parse(playerSettings["flags"]);
                     res.m_Guid = uint.Parse(playerSettings["guid"]);
-                    res.m_EditorGuid = uint.Parse(playerSettings["guid"]);
+                    res.m_EditorGuid = uint.Parse(playerSettings["editorid"]);
                     res.m_Version = int.Parse(playerSettings["version"]);
                     res.m_Id = playerSettings["id"];
                     res.m_AllowDebugging = 0 != int.Parse(playerSettings["debug"]);
@@ -134,9 +134,10 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
                     Console.WriteLine(res.ToString());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw new ArgumentException("Unable to parse player string", e);
+                    UnityDebug.Log.Write("Unable to parse player string");
+                    throw;
                 }
 
                 return res;
