@@ -29,12 +29,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Net.Sockets;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
-using System.Linq;
+using System.Net.Sockets;
 
 namespace MonoDevelop.Debugger.Soft.Unity
 {
@@ -65,14 +63,16 @@ namespace MonoDevelop.Debugger.Soft.Unity
             public string m_Id;
             public bool m_AllowDebugging;
             public UInt32 m_DebuggerPort;
+            public string m_ProjectName;
 
             public override string ToString()
             {
-                return $"PlayerInfo {m_IPEndPoint.Address} {m_IPEndPoint.Port} {m_Flags} {m_Guid} {m_EditorGuid}" +
-                    $" {m_Version} {m_Id}:{m_DebuggerPort} {(m_AllowDebugging ? 1 : 0)}";
+                return $"{m_Id}:{m_DebuggerPort} {m_ProjectName} {m_Version} {m_IPEndPoint.Address} {m_IPEndPoint.Port}" +
+                    $" {m_Flags} {m_Guid} {m_EditorGuid} {(m_AllowDebugging ? 1 : 0)}";
             }
 
-            public static Dictionary<string, string> ParsePlayerString(string playerString) {
+            public static Dictionary<string, string> ParsePlayerString(string playerString)
+            {
                 // Remove trailing null character
                 playerString = playerString.TrimEnd('\0');
 
@@ -80,18 +80,23 @@ namespace MonoDevelop.Debugger.Soft.Unity
                 int partStart = 0;
                 int partLen = 0;
                 List<string> strings = new List<string>();
-                for (int i = 0; i < playerString.Length; i++) {
+                for (int i = 0; i < playerString.Length; i++)
+                {
                     var c = playerString[i];
-                    if (c == '[') {
+                    if (c == '[')
+                    {
                         partLen = i - partStart;
-                        if (partLen > 0) {
+                        if (partLen > 0)
+                        {
                             strings.Add(playerString.Substring(partStart, partLen));
                         }
                         partStart = i + 1;
                     }
-                    else if (c == ']') {
+                    else if (c == ']')
+                    {
                         partLen = i - partStart;
-                        if (partLen > 0) {
+                        if (partLen > 0)
+                        {
                             strings.Add(playerString.Substring(partStart, partLen));
                         }
                         partStart = i + 1;
@@ -99,13 +104,15 @@ namespace MonoDevelop.Debugger.Soft.Unity
                 }
 
                 partLen = playerString.Length - partStart;
-                if (partLen > 0) {
+                if (partLen > 0)
+                {
                     strings.Add(playerString.Substring(partStart, partLen));
                 }
 
                 // Group key/value pairs
                 Dictionary<string, string> dict = new Dictionary<string, string>();
-                while (strings.Count >= 2) {
+                while (strings.Count >= 2)
+                {
                     var key = strings[0].Trim().ToLower();
                     var value = strings[1].Trim();
                     strings.RemoveRange(0, 2);
@@ -115,10 +122,11 @@ namespace MonoDevelop.Debugger.Soft.Unity
                 return dict;
             }
 
-            public static PlayerInfo Parse(string playerString) {
+            public static PlayerInfo Parse(string playerString)
+            {
                 var res = new PlayerInfo();
-
-                try {
+                try
+                {
                     var playerSettings = ParsePlayerString(playerString);
 
                     var ip = playerSettings["ip"];
@@ -131,7 +139,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     res.m_AllowDebugging = 0 != int.Parse(playerSettings["debug"]);
                     if (playerSettings.ContainsKey("debuggerport"))
                         res.m_DebuggerPort = uint.Parse(playerSettings["debuggerport"]);
-
+                    if (playerSettings.ContainsKey("projectname"))
+                        res.m_ProjectName = playerSettings["projectname"];
                     Console.WriteLine(res.ToString());
                 }
                 catch (Exception)

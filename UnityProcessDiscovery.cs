@@ -161,7 +161,6 @@ namespace MonoDevelop.Debugger.Soft.Unity
 
             if (systemProcesses == null)
                 return unityEditorProcesses;
-
             foreach (Process p in systemProcesses)
             {
                 try
@@ -172,7 +171,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     {
                         if (processName.Equals(unityEditorProcessName, StringComparison.OrdinalIgnoreCase))
                         {
-                            unityEditorProcesses.Add(new UnityProcessInfo(p.Id, $"Unity Editor ({processName})"));
+                            unityEditorProcesses.Add(new UnityProcessInfo(p.Id, $"Unity Editor ({processName})", p.MainWindowTitle));
                             UnityDebug.Log.Write($"Unity Editor process: {unityEditorProcessName} on id: {p.Id}");
                         }
                     }
@@ -229,7 +228,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                         if (info.m_AllowDebugging)
                         {
                             UnityPlayers[info.m_Guid] = info;
-                            processes.Add(new UnityProcessInfo(info.m_Guid, info.m_Id));
+                            processes.Add(new UnityProcessInfo(info.m_Guid, info.m_Id, info.m_ProjectName));
                             ++index;
                         }
                     }
