@@ -139,7 +139,8 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     res.m_AllowDebugging = 0 != int.Parse(playerSettings["debug"]);
                     if (playerSettings.ContainsKey("debuggerport"))
                         res.m_DebuggerPort = uint.Parse(playerSettings["debuggerport"]);
-                    res.m_ProjectName = playerSettings["projectname"];
+                    if (playerSettings.ContainsKey("projectname"))
+                        res.m_ProjectName = playerSettings["projectname"];
                     Console.WriteLine(res.ToString());
                 }
                 catch (Exception)
