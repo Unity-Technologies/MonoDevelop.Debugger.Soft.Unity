@@ -90,6 +90,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                         {
                             strings.Add(playerString.Substring(partStart, partLen));
                         }
+
                         partStart = i + 1;
                     }
                     else if (c == ']')
@@ -99,6 +100,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                         {
                             strings.Add(playerString.Substring(partStart, partLen));
                         }
+
                         partStart = i + 1;
                     }
                 }
@@ -145,7 +147,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                 }
                 catch (Exception)
                 {
-                    UnityDebug.Log.Write("Unable to parse player string");
+                    Log.Info("Unable to parse player string");
                     throw;
                 }
 
@@ -184,7 +186,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     var ip = IPAddress.Parse(PLAYER_MULTICAST_GROUP);
                     multicastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
                         new MulticastOption(ip, p.Index));
-                    UnityDebug.Log.Write($"Setting up multicast option: {ip}: {port}");
+                    Log.Info($"Setting up multicast option: {ip}: {port}");
                     m_MulticastSockets.Add(multicastSocket);
                 }
             }

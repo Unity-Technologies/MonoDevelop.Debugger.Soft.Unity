@@ -45,34 +45,6 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="Mono.Debugger.Soft">
-      <HintPath>..\monodevelop\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Debugger.Soft">
-      <HintPath>..\monodevelop\main\build\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Debugger">
-      <HintPath>..\monodevelop\main\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Debugging">
-      <HintPath>..\monodevelop\main\build\bin\Mono.Debugging.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Debugging.Soft">
-      <HintPath>..\monodevelop\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <HintPath>..\monodevelop\main\build\bin\MonoDevelop.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\monodevelop\main\build\bin\MonoDevelop.Ide.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Mono.Addins">
       <HintPath>..\monodevelop\main\build\bin\Mono.Addins.dll</HintPath>
       <Private>False</Private>
@@ -91,9 +63,7 @@
     <Compile Include="iOSOverUsbSupport.cs" />
     <Compile Include="UnitySoftDebuggerEngine.cs" />
     <Compile Include="UnitySoftDebuggerSession.cs" />
-    <Compile Include="UnityProjectServiceExtension.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.Soft.Unity.GeneralOptionsPanel.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="PlayerConnection.cs" />
@@ -102,6 +72,20 @@
     <Compile Include="UnityAttachInfo.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Log.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\debugger-libs\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
+      <Project>{372e8e3e-29d5-4b4d-88a2-4711cd628c4e}</Project>
+      <Name>Mono.Debugger.Soft</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
+      <Project>{de40756e-57f6-4af2-b155-55e3a88cced8}</Project>
+      <Name>Mono.Debugging.Soft</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
+      <Project>{90c99adb-7d4b-4eb4-98c2-40bd1b14c7d2}</Project>
+      <Name>Mono.Debugging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
