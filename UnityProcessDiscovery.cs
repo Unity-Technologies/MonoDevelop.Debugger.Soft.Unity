@@ -57,7 +57,7 @@ namespace MonoDevelop.Debugger.Soft.Unity
             catch (Exception e)
             {
                 UnityDebug.Log.Write("Error launching player connection discovery service: Unity player discovery will be unavailable");
-                UnityDebug.Log.Write(e.Message);
+                UnityDebug.Log.Write(e.ToString());
                 Log.Error("Error launching player connection discovery service: Unity player discovery will be unavailable", e);
             }
         }
