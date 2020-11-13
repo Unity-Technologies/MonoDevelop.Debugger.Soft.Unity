@@ -184,9 +184,17 @@ namespace MonoDevelop.Debugger.Soft.Unity
                     multicastSocket.Bind(ipep);
 
                     var ip = IPAddress.Parse(PLAYER_MULTICAST_GROUP);
-                    multicastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
-                        new MulticastOption(ip, p.Index));
-                    Log.Info($"Setting up multicast option: {ip}: {port}");
+
+                    try
+                    {
+                        multicastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
+                            new MulticastOption(ip, p.Index));
+                        Log.Info($"Setting up multicast option: {ip}: {port}");
+                    }
+                    catch (SocketException e)
+                    {
+                        Log.Error($"Failed to set socket options on adapter {adapter.Id}, address {ip}: {port}", e);
+                    }
                     m_MulticastSockets.Add(multicastSocket);
                 }
             }
